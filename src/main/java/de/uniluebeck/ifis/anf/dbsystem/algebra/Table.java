@@ -147,12 +147,37 @@ public class Table implements Serializable
     return null;
   }
 
+  // TODO: Check implementation with unit test
   @Override
   public String toString()
   {
-    // TODO: Ueber Felder iterieren
-    return "Table{" + "name=" + name + ", alias=" + alias + ", drop=" + drop +
-            ", columnNames=" + columnNames + ", rows=" + rows + '}';
+    // Generate header for table output
+    String colNames = "";
+    for (int i = 0; i < this.columnNames.length; ++i)
+    {
+      colNames += this.columnNames[i];
+      if (i < this.columnNames.length)
+      {
+        colNames += " | ";
+      }
+    }
+    
+    // Generate output with content of table
+    String rowContent = "";
+    for (int i = 0; i < this.rows.size(); ++i)
+    {
+      rowContent += this.rows.get(i);
+      if (i < this.rows.size())
+      {
+        rowContent += " | ";
+      }
+      rowContent += "\n";
+    }
+    
+    String result = String.format("Table: %s aias %s [drop = %b]\n\n%s\n\n%s",
+            this.name, this.alias, this.drop, colNames, rowContent);
+    
+    return result;
   }
   
   public Relation toRelation()
