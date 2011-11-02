@@ -7,12 +7,14 @@ import java.util.ArrayList;
  */
 public class Relation implements ITreeNode
 {
-  
   private String name;
+
   private String alias;
+
   private String[] columnNames;
+
   private ArrayList<Row> rows;
-  
+
   public Relation()
   {
     this.rows = new ArrayList<Row>();
@@ -61,5 +63,17 @@ public class Relation implements ITreeNode
   public Relation evaluate()
   {
     return this;
+  }
+
+  public Table toTable()
+  {
+    Table table = new Table(this.getName(), this.getAlias(), this.getColumnNames());
+
+    for (Row row: this.getRows())
+    {
+      table.addRow(row.getTuple());
+    }
+
+    return table;
   }
 }

@@ -9,17 +9,17 @@ import java.util.ArrayList;
 public class Table implements Serializable
 {
   protected static String databasePath;
-  
+
   protected String name;
-  
+
   protected String alias;
-  
+
   protected boolean drop;
-  
+
   protected String[] columnNames;
-  
+
   protected ArrayList<String[]> rows;
-  
+
   public Table(final String name, String alias, final String[] columnNames)
   {
     this.setName(name);
@@ -88,115 +88,133 @@ public class Table implements Serializable
   {
     this.rows = rows;
   }
-  
+
   public static Table loadTable(String tableName)
   {
     // TODO
     return null;
   }
-  
-  public static Table RelationToTable(Relation relation){
-    Table table = new Table(relation.getName(), relation.getAlias(), relation.getColumnNames());
-    for (Row row : relation.getRows()){
-      table.addRow(row.getTuple());
-    }
-    return table;
-  }
-  
+
   public void write()
   {
     // TODO
   }
-  
+
   public String[] getRow(int index)
   {
     return this.rows.get(index);
   }
-  
+
   public void addRow(String[] row)
   {
     this.rows.add(row);
   }
-  
+
   public void deleteRow(int index)
   {
     this.rows.remove(index);
   }
-  
+
   public Table projectTo(String[] columnNames)
   {
     // TODO
     return null;
   }
-  
+
   public Table select(AndExpression selectExpression)
   {
     // TODO
     return null;
   }
-  
+
   public Table join(Table joinPartner, AndExpression joinExpression)
   {
     // TODO
     return null;
   }
-  
+
   public Table cross(Table crossPartner)
   {
     // TODO
     return null;
   }
 
-  // TODO: Check implementation with unit test
-  @Override
-  public String toString()
-  {
-    // Generate header for table output
-    String colNames = "";
-    for (int i = 0; i < this.columnNames.length; ++i)
-    {
-      colNames += this.columnNames[i];
-      if (i < this.columnNames.length)
-      {
-        colNames += " | ";
-      }
-    }
-    
-    // Generate output with content of table
-    String rowContent = "";
-    for (int i = 0; i < this.rows.size(); ++i)
-    {
-      rowContent += this.rows.get(i);
-      if (i < this.rows.size())
-      {
-        rowContent += " | ";
-      }
-      rowContent += "\n";
-    }
-    
-    String result = String.format("Table: %s aias %s [drop = %b]\n\n%s\n\n%s",
-            this.name, this.alias, this.drop, colNames, rowContent);
-    
-    return result;
-  }
-  
   public Relation toRelation()
   {
     Relation relation = new Relation();
-    
+
     relation.setName(this.name);
     relation.setAlias(this.alias);
     relation.setColumnNames(this.columnNames);
-    
-    for (String[] tableRow : rows){
+
+    for (String[] tableRow: rows)
+    {
       Row row = new Row();
       row.name = this.name;
       row.alias = this.alias;
       row.tupleNames = this.columnNames;
       row.tuple = tableRow;
+
       relation.getRows().add(row);
     }
-    
+
     return relation;
+  }
+
+  /**
+   * Pretty-print meta information and content of table.
+   * 
+   * @return String with table data
+   */
+  @Override
+  public String toString()
+  {
+    // Amount of characters that are shown from content
+    int n = 20;
+
+    // Generate header for table output
+    String tableHeader = "| ";
+    String columnName = "";
+    for (int i = 0; i < this.columnNames.length; ++i)
+    {
+      columnName = (this.columnNames[i].length() > n ? this.columnNames[i].substring(0, n - 3) + "..." : this.columnNames[i]);
+      tableHeader += String.format("%-" + n + "s |", columnName);
+
+      if (i < this.columnNames.length - 1)
+      {
+        tableHeader += " ";
+      }
+    }
+
+    // Create line of '-' characters
+    String line = "";
+    for (int i = 0; i < tableHeader.length(); ++i)
+    {
+      line += "-";
+    }
+
+    // Generate output with content of table
+    String tableContent = "";
+    String rowContent = "";
+    for (int i = 0; i < this.rows.size(); ++i)
+    {
+      tableContent += "| ";
+      for (int j = 0; j < this.rows.get(i).length; ++j)
+      {
+        rowContent = (this.rows.get(i)[j].length() > n ? this.rows.get(i)[j].substring(0, n - 3) + "..." : this.rows.get(i)[j]);
+        tableContent += String.format("%-" + n + "s |", rowContent);
+
+        if (j < this.rows.get(i)[j].length() - 1)
+        {
+          tableContent += " ";
+        }
+      }
+      tableContent += "\n";
+    }
+
+    String result = String.format("Table: '%s' alias '%s' [drop = %b]\n\n%s\n%s\n%s\n%s%s",
+            this.name, this.alias, this.drop, line, tableHeader, line, tableContent, line);
+
+    return result;
   }
 }
