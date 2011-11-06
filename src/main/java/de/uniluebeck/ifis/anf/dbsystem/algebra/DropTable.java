@@ -10,8 +10,16 @@ public class DropTable extends TableOperation
   {
     Table table = Table.loadTable(this.name);
     table.drop = true;
-    table.write();
-    
+
+    try
+    {
+      table.write();
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+
     return table;
   }
 }

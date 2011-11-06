@@ -21,8 +21,16 @@ public class CreateTable extends TableOperation
   public Table execute()
   {
     Table table = new Table(this.name, this.name, this.columnNames);
-    table.write();
-    
+
+    try
+    {
+      table.write();
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+
     return table;
   }
 }

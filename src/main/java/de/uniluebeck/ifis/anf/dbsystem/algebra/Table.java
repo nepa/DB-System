@@ -1,14 +1,25 @@
 package de.uniluebeck.ifis.anf.dbsystem.algebra;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
  * @author seidel
  */
 public class Table implements Serializable
 {
-  protected static String databasePath;
+  /** Absolute path to folder, where tables are stored in file system (with trailing slash!) */
+  public static final String DATABASE_PATH = "/home/nepa/NetBeansProjects/DB-System/database/";
+
+  /** File extension for database tables in file system (with leading dot!) */
+  public static final String DATABASE_TABLE_FILE_EXTENSION = ".dbt";
 
   protected String name;
 
@@ -49,16 +60,6 @@ public class Table implements Serializable
     this.columnNames = columnNames;
   }
 
-  public static String getDatabasePath()
-  {
-    return databasePath;
-  }
-
-  public static void setDatabasePath(String databasePath)
-  {
-    Table.databasePath = databasePath;
-  }
-
   public boolean isDrop()
   {
     return drop;
@@ -88,16 +89,68 @@ public class Table implements Serializable
   {
     this.rows = rows;
   }
-
-  public static Table loadTable(String tableName)
+  
+  /**
+   * Load Table object from file.
+   * 
+   * @param tableName Name of desired table
+   * 
+   * @return In-memory Table object
+   */
+  public static Table loadTable(final String tableName)
   {
-    // TODO
-    return null;
+    FileInputStream fileInputStream = null;
+    ObjectInputStream objectInputStream = null;
+    Table result = null;
+
+    try
+    {
+      // Load input stream from file
+      fileInputStream = new FileInputStream(Table.DATABASE_PATH +
+              System.getProperty("file.separator") + tableName + Table.DATABASE_TABLE_FILE_EXTENSION);
+      objectInputStream = new ObjectInputStream(fileInputStream);
+
+      // Deserialize object from stream
+      result = (Table)objectInputStream.readObject();
+      objectInputStream.close();
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+
+    return result;
   }
 
-  public void write()
+  /**
+   * Write current Table object to file.
+   */
+  public void write() throws Exception
   {
-    // TODO
+    if (!(new File(Table.DATABASE_PATH)).exists())
+    {
+      throw new FileNotFoundException(String.format("Database folder '%s' does not exist. " +
+              "Please create it and try again.", Table.DATABASE_PATH));
+    }
+
+    FileOutputStream fileOutputStream = null;
+    ObjectOutputStream objectOutputStream = null;
+
+    try
+    {
+      // Open stream for object write-out
+      fileOutputStream = new FileOutputStream(Table.DATABASE_PATH +
+              System.getProperty("file.separator") + this.getName() + Table.DATABASE_TABLE_FILE_EXTENSION);
+      objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+      // Serialize object to stream
+      objectOutputStream.writeObject(this);
+      objectOutputStream.close();
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
   }
 
   public String[] getRow(int index)
@@ -204,7 +257,7 @@ public class Table implements Serializable
         rowContent = (this.rows.get(i)[j].length() > n ? this.rows.get(i)[j].substring(0, n - 3) + "..." : this.rows.get(i)[j]);
         tableContent += String.format("%-" + n + "s |", rowContent);
 
-        if (j < this.rows.get(i)[j].length() - 1)
+        if (j < this.rows.size() - 1)
         {
           tableContent += " ";
         }
