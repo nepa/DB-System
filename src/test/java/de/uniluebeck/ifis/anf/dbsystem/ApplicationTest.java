@@ -1,15 +1,11 @@
 package de.uniluebeck.ifis.anf.dbsystem;
 
-import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.EqualityExpression;
-import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.PrimaryExpression;
-import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.AndExpression;
-import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.io.File;
 
-import de.uniluebeck.ifis.anf.dbsystem.algebra.*;
+import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.*;
 import de.uniluebeck.ifis.anf.dbsystem.algebra.tableOperations.*;
 
 /**
@@ -58,6 +54,7 @@ public class ApplicationTest
     createTableOperation.setName(tableName);
     createTableOperation.setColumnNames(new String[] { "Firstname", "Lastname", "Age" });
 
+    System.out.println(String.format("Creating table '%s'...", tableName));
     Table table = createTableOperation.execute();
     assertNotNull("Table object must not be null.", table);
     this.printTable(table);
@@ -68,6 +65,7 @@ public class ApplicationTest
     insertOperation.setColumnNames(new String[] { "Firstname", "Lastname", "Age" });
     insertOperation.setValues(new String[] { "Max", "Mustermann", "42" });
     
+    System.out.println("Inserting entry 'Max'...");
     table = insertOperation.execute();
     assertTrue("Table must contain entry that was inserted.", table.toString().contains("Max"));
     this.printTable(table);
@@ -77,7 +75,8 @@ public class ApplicationTest
     insertOperation.setName(tableName);
     insertOperation.setColumnNames(new String[] { "Firstname", "Age" });
     insertOperation.setValues(new String[] { "Vanessa", "27" });
-    
+
+    System.out.println("Inserting entry 'Vanessa'...");
     table = insertOperation.execute();
     assertTrue("Table must contain entry that was inserted.", table.toString().contains("Vanessa"));
     this.printTable(table);
@@ -95,7 +94,8 @@ public class ApplicationTest
     updateOperation.setWhereClause(andExpression);
     updateOperation.setColumnNames(new String[] { "Lastname" });
     updateOperation.setValues(new String[] { "Meier" });
-    
+
+    System.out.println("Updating entry 'Vanessa'...");
     table = updateOperation.execute();
     assertTrue("Table must contain altered entry.", table.toString().contains("Meier"));
     this.printTable(table);
@@ -111,7 +111,8 @@ public class ApplicationTest
     Delete deleteOperation = new Delete();
     deleteOperation.setName(tableName);
     deleteOperation.setWhereClause(andExpression);
-    
+
+    System.out.println("Deleting entry 'Max'...");
     table = deleteOperation.execute();
     assertTrue("Table must not contain deleted entry anymore.", !table.toString().contains("Mustermann"));
     this.printTable(table);
@@ -120,6 +121,7 @@ public class ApplicationTest
     DropTable dropTableOperation = new DropTable();
     dropTableOperation.setName(tableName);
     
+    System.out.println(String.format("Dropping table '%s'...", tableName));
     table = dropTableOperation.execute();
     assertTrue("Drop flag must be set for table.", table.isDropped());
     this.printTable(table);

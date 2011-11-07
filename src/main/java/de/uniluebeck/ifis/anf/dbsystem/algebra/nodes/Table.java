@@ -16,7 +16,7 @@ import java.io.ObjectOutputStream;
 public class Table implements Serializable
 {
   /** Absolute path to folder, where tables are stored in file system (with trailing slash!) */
-  public static final String DATABASE_PATH = "/home_students/seidel/NetBeansProjects/DB-System/database/";
+  public static final String DATABASE_PATH = System.getProperty("user.home") + "/NetBeansProjects/DB-System/database/";
 
   /** File extension for database tables in file system (with leading dot!) */
   public static final String DATABASE_TABLE_FILE_EXTENSION = ".dbt";
