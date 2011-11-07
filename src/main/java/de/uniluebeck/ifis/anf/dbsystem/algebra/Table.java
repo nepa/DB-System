@@ -16,7 +16,7 @@ import java.io.ObjectOutputStream;
 public class Table implements Serializable
 {
   /** Absolute path to folder, where tables are stored in file system (with trailing slash!) */
-  public static final String DATABASE_PATH = "/home/nepa/NetBeansProjects/DB-System/database/";
+  public static final String DATABASE_PATH = "/home_students/seidel/NetBeansProjects/DB-System/database/";
 
   /** File extension for database tables in file system (with leading dot!) */
   public static final String DATABASE_TABLE_FILE_EXTENSION = ".dbt";
@@ -127,29 +127,43 @@ public class Table implements Serializable
    */
   public void write() throws Exception
   {
+    String pathToFile = Table.DATABASE_PATH + System.getProperty("file.separator") + this.getName() + Table.DATABASE_TABLE_FILE_EXTENSION;
+    
     if (!(new File(Table.DATABASE_PATH)).exists())
     {
       throw new FileNotFoundException(String.format("Database folder '%s' does not exist. " +
               "Please create it and try again.", Table.DATABASE_PATH));
     }
-
-    FileOutputStream fileOutputStream = null;
-    ObjectOutputStream objectOutputStream = null;
-
-    try
+    
+    // Delete table from database, if drop-flag is set
+    if (this.drop)
     {
-      // Open stream for object write-out
-      fileOutputStream = new FileOutputStream(Table.DATABASE_PATH +
-              System.getProperty("file.separator") + this.getName() + Table.DATABASE_TABLE_FILE_EXTENSION);
-      objectOutputStream = new ObjectOutputStream(fileOutputStream);
-
-      // Serialize object to stream
-      objectOutputStream.writeObject(this);
-      objectOutputStream.close();
+      if (!(new File(pathToFile)).delete())
+      {
+        throw new IllegalStateException(String.format("Could not drop table '%s'", this.getName()));
+      }
     }
-    catch (Exception e)
+    // Save table otherwise
+    else
     {
-      e.printStackTrace();
+      FileOutputStream fileOutputStream = null;
+      ObjectOutputStream objectOutputStream = null;
+
+      try
+      {
+        // Open stream for object write-out
+        fileOutputStream = new FileOutputStream(Table.DATABASE_PATH +
+                System.getProperty("file.separator") + this.getName() + Table.DATABASE_TABLE_FILE_EXTENSION);
+        objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+        // Serialize object to stream
+        objectOutputStream.writeObject(this);
+        objectOutputStream.close();
+      }
+      catch (Exception e)
+      {
+        e.printStackTrace();
+      }
     }
   }
 

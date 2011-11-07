@@ -8,6 +8,12 @@ public class PrimaryExpression implements IExpression
   protected boolean isConstant;
   
   protected String value;
+  
+  public PrimaryExpression(final String value, final boolean isConstant)
+  {
+    this.setValue(value);
+    this.setIsConstant(isConstant);
+  }
 
   public boolean isIsConstant()
   {

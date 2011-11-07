@@ -22,8 +22,24 @@ public class Delete extends TableOperation
   @Override
   public Table execute()
   {
-    // TODO Delete relevant rows from table
-    return null;
+    Table table = Table.loadTable(this.name);
+    
+    Relation relation = table.toRelation();
+    List<Row> rows = this.getRelevantRows(relation);
+    relation.getRows().removeAll(rows);
+    
+    table = relation.toTable();
+    
+    try
+    {
+      table.write();
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+    
+    return table;
   }
   
   protected List<Row> getRelevantRows(Relation relation){

@@ -35,9 +35,11 @@ public class Insert extends TableOperation
     Table table = Table.loadTable(this.name);
 
     String[] newRow = new String[table.columnNames.length];
-    for (int i = 0; i < newRow.length; i++){
+    for (int i = 0; i < newRow.length; i++)
+    {
       newRow[i] = "";
     }
+    
     for (int i = 0; i < table.columnNames.length; ++i)
     {
       for (int j = 0; j < this.columnNames.length; ++j)
@@ -50,6 +52,16 @@ public class Insert extends TableOperation
     }
 
     table.addRow(newRow);
+    
+    try
+    {
+      table.write();
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+    
     return table;
   }
 }
