@@ -1,4 +1,4 @@
-package de.uniluebeck.ifis.anf.dbsystem.algebra;
+package de.uniluebeck.ifis.anf.dbsystem.algebra.nodes;
 
 import java.util.ArrayList;
 

@@ -1,5 +1,8 @@
-package de.uniluebeck.ifis.anf.dbsystem.algebra;
+package de.uniluebeck.ifis.anf.dbsystem.algebra.tableOperations;
 
+import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Relation;
+import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Row;
+import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table;
 import java.util.List;
 
 /**
@@ -42,13 +45,13 @@ public class Update extends Delete
     // Update relevant rows
     for (Row row: rows)
     {
-      for (int i = 0; i < row.tuple.length; ++i)
+      for (int i = 0; i < row.getTuple().length; ++i)
       {
         for (int j = 0; j < this.columnNames.length; ++j)
         {
-          if (row.tupleNames[i].equals(this.columnNames[j]))
+          if (row.getTupleNames()[i].equals(this.columnNames[j]))
           {
-            row.tuple[i] = this.values[j];
+            row.getTuple()[i] = this.values[j];
           }
         }
       }

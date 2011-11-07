@@ -1,31 +1,36 @@
-package de.uniluebeck.ifis.anf.dbsystem.algebra;
+package de.uniluebeck.ifis.anf.dbsystem.algebra.nodes;
 
 /**
  * @author seidel
  */
-public class Join extends CrossProduct
+public class Selection extends OneChildNode
 {
   protected AndExpression expression;
-
+  
   public AndExpression getExpression()
   {
     return expression;
   }
-
+  
   public void setExpression(AndExpression expression)
   {
     this.expression = expression;
   }
   
-  @Override
-  public Relation evaluate(){
-    Relation rel = super.evaluate();
+  public Relation evaluate()
+  {
+    Relation relation = this.getChild().evaluate();
+    
     Relation result = new Relation();
-    for (Row row : rel.getRows()){
-      if (expression.evaluate(row)){
+    
+    for (Row row: relation.getRows())
+    {
+      if (this.expression.evaluate(row))
+      {
         result.getRows().add(row);
       }
     }
+    
     return result;
   }
 }

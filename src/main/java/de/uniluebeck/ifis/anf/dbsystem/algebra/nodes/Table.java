@@ -1,4 +1,4 @@
-package de.uniluebeck.ifis.anf.dbsystem.algebra;
+package de.uniluebeck.ifis.anf.dbsystem.algebra.nodes;
 
 import java.io.File;
 import java.io.Serializable;
@@ -60,7 +60,7 @@ public class Table implements Serializable
     this.columnNames = columnNames;
   }
 
-  public boolean isDrop()
+  public boolean isDropped()
   {
     return drop;
   }
@@ -271,7 +271,8 @@ public class Table implements Serializable
         rowContent = (this.rows.get(i)[j].length() > n ? this.rows.get(i)[j].substring(0, n - 3) + "..." : this.rows.get(i)[j]);
         tableContent += String.format("%-" + n + "s |", rowContent);
 
-        if (j < this.rows.size() - 1)
+        // Add space in every row
+        if (i < this.rows.size())
         {
           tableContent += " ";
         }

@@ -1,4 +1,4 @@
-package de.uniluebeck.ifis.anf.dbsystem.algebra;
+package de.uniluebeck.ifis.anf.dbsystem.algebra.nodes;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -9,6 +9,11 @@ import java.util.ArrayList;
 public class OrExpression implements IBooleanExpression
 {
   protected List<EqualityExpression> expressions;
+  
+  public OrExpression()
+  {
+    expressions = new ArrayList<EqualityExpression>();
+  }
   
   public OrExpression(final List<EqualityExpression> expressions)
   {

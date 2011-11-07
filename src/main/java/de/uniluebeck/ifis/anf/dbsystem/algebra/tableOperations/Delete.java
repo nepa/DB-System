@@ -1,5 +1,10 @@
-package de.uniluebeck.ifis.anf.dbsystem.algebra;
+package de.uniluebeck.ifis.anf.dbsystem.algebra.tableOperations;
 
+import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.AndExpression;
+import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Relation;
+import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Row;
+import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Selection;
+import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table;
 import java.util.List;
 
 /**
@@ -47,5 +52,11 @@ public class Delete extends TableOperation
     selection.setChild(relation);
     selection.setExpression(whereClause);
     return selection.evaluate().getRows();
+  }
+    
+  @Override
+  public Relation evaluate()
+  {
+    return this.execute().toRelation();
   }
 }

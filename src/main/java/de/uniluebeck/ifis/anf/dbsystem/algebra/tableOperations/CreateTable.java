@@ -1,4 +1,7 @@
-package de.uniluebeck.ifis.anf.dbsystem.algebra;
+package de.uniluebeck.ifis.anf.dbsystem.algebra.tableOperations;
+
+import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Relation;
+import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table;
 
 /**
  * @author seidel
@@ -32,5 +35,11 @@ public class CreateTable extends TableOperation
     }
 
     return table;
+  }
+
+  @Override
+  public Relation evaluate()
+  {
+    return this.execute().toRelation();
   }
 }

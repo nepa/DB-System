@@ -1,13 +1,16 @@
 package de.uniluebeck.ifis.anf.dbsystem;
 
-
+import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.EqualityExpression;
+import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.PrimaryExpression;
+import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.AndExpression;
+import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.io.File;
 
 import de.uniluebeck.ifis.anf.dbsystem.algebra.*;
-import java.io.FileNotFoundException;
+import de.uniluebeck.ifis.anf.dbsystem.algebra.tableOperations.*;
 
 /**
  * Unit test for DB-System application.
@@ -56,6 +59,7 @@ public class ApplicationTest
     createTableOperation.setColumnNames(new String[] { "Firstname", "Lastname", "Age" });
 
     Table table = createTableOperation.execute();
+    assertNotNull("Table object must not be null.", table);
     this.printTable(table);
     
     // Test INSERT operation
@@ -65,6 +69,7 @@ public class ApplicationTest
     insertOperation.setValues(new String[] { "Max", "Mustermann", "42" });
     
     table = insertOperation.execute();
+    assertTrue("Table must contain entry that was inserted.", table.toString().contains("Max"));
     this.printTable(table);
     
     // Test another INSERT operation
@@ -74,6 +79,7 @@ public class ApplicationTest
     insertOperation.setValues(new String[] { "Vanessa", "27" });
     
     table = insertOperation.execute();
+    assertTrue("Table must contain entry that was inserted.", table.toString().contains("Vanessa"));
     this.printTable(table);
     
     // Test UPDATE operation
@@ -91,6 +97,7 @@ public class ApplicationTest
     updateOperation.setValues(new String[] { "Meier" });
     
     table = updateOperation.execute();
+    assertTrue("Table must contain altered entry.", table.toString().contains("Meier"));
     this.printTable(table);
     
     // Test DELETE operation
@@ -106,13 +113,15 @@ public class ApplicationTest
     deleteOperation.setWhereClause(andExpression);
     
     table = deleteOperation.execute();
+    assertTrue("Table must not contain deleted entry anymore.", !table.toString().contains("Mustermann"));
     this.printTable(table);
     
     // Test DROP TABLE operation
     DropTable dropTableOperation = new DropTable();
     dropTableOperation.setName(tableName);
     
-    table = dropTableOperation.execute();    
+    table = dropTableOperation.execute();
+    assertTrue("Drop flag must be set for table.", table.isDropped());
     this.printTable(table);
   }
 
@@ -154,39 +163,15 @@ public class ApplicationTest
    */
   private Table createTestTable()
   {
-    Table table = new Table("Studenten", "s", new String[]
-            {
-              "Name", "Matrikelnummer", "Studiengang", "Semester"
-            });
+    Table table = new Table("Studenten", "s", new String[] { "Name", "Matrikelnummer", "Studiengang", "Semester" });
 
-    table.addRow(new String[]
-            {
-              "Alice", "12345", "Medizin", "16"
-            });
-    table.addRow(new String[]
-            {
-              "Bob", "67890", "Jura", "3"
-            });
-    table.addRow(new String[]
-            {
-              "Homer", "111111", "Kernphysik", "27"
-            });
-    table.addRow(new String[]
-            {
-              "Marge", "222222", "Kunst", "7"
-            });
-    table.addRow(new String[]
-            {
-              "Bart", "333333", "Informatik", "4"
-            });
-    table.addRow(new String[]
-            {
-              "Lisa", "444444", "Kunst", "3"
-            });
-    table.addRow(new String[]
-            {
-              "Maggie", "555555", "Informatik", "1"
-            });
+    table.addRow(new String[] { "Alice", "12345", "Medizin", "16" });
+    table.addRow(new String[] { "Bob", "67890", "Jura", "3" });
+    table.addRow(new String[] { "Homer", "111111", "Kernphysik", "27" });
+    table.addRow(new String[] { "Marge", "222222", "Kunst", "7" });
+    table.addRow(new String[] { "Bart", "333333", "Informatik", "4" });
+    table.addRow(new String[] { "Lisa", "444444", "Kunst", "3" });
+    table.addRow(new String[] { "Maggie", "555555", "Informatik", "1" });
 
     return table;
   }

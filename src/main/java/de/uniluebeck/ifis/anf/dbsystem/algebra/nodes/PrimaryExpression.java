@@ -1,4 +1,4 @@
-package de.uniluebeck.ifis.anf.dbsystem.algebra;
+package de.uniluebeck.ifis.anf.dbsystem.algebra.nodes;
 
 /**
  * @author seidel
@@ -8,6 +8,12 @@ public class PrimaryExpression implements IExpression
   protected boolean isConstant;
   
   protected String value;
+  
+  public PrimaryExpression()
+  {
+    this.setValue("");
+    this.setIsConstant(false);
+  }
   
   public PrimaryExpression(final String value, final boolean isConstant)
   {

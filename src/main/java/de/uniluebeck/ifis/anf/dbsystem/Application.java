@@ -1,6 +1,6 @@
 package de.uniluebeck.ifis.anf.dbsystem;
 
-import de.uniluebeck.ifis.anf.dbsystem.algebra.ITreeNode;
+import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.ITreeNode;
 
 /**
  * DB-System main application.
