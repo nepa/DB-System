@@ -42,25 +42,42 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
     * f3 -> Tables()
     * f4 -> [ Where() ]
     */
-   public Object visit(Query n, Object argu) {
-      Object _ret=null;
-      n.f0.accept(this, argu);
-      n.f1.accept(this, argu);
-      n.f2.accept(this, argu);
-      n.f3.accept(this, argu);
-      n.f4.accept(this, argu);
-      return _ret;
-   }
+	public Object visit(Query n, Object argu) {
+		List<String> selectItems = (List<String>) n.f1.accept(this, argu);
+		List<String> tableNames = (List<String>) n.f3.accept(this, argu);
+
+		de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.AndExpression whereClause = null;
+		if (n.f4.present()) {
+
+			List<String> columnNames = new ArrayList<String>();
+			for (String tableName : tableNames) {
+				de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table table = de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table
+						.loadTable(tableName);
+				for (String columnName : table.getColumnNames()) {
+					columnNames.add(columnName);
+				}
+			}
+			whereClause = (de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.AndExpression) n.f4.node
+					.accept(this, columnNames);
+		}
+
+		this.executionPlan = de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Relation
+				.createSelection(selectItems, tableNames, whereClause);
+		return null;
+	}
 
    /**
     * f0 -> Item()
     * f1 -> ( "," Item() )*
     */
    public Object visit(Items n, Object argu) {
-      Object _ret=null;
-      n.f0.accept(this, argu);
-      n.f1.accept(this, argu);
-      return _ret;
+      List<String> columnNames = new ArrayList<String>();
+      columnNames.add((String) n.f0.accept(this, argu));
+      for (Object sequenceObj : n.f1.nodes){
+    	  NodeSequence sequence = (NodeSequence) sequenceObj;
+    	  columnNames.add((String) sequence.elementAt(1).accept(this, argu));
+      }
+      return columnNames;
    }
 
    /**
@@ -68,10 +85,13 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
     * f1 -> [ "." Name() ]
     */
    public Object visit(Item n, Object argu) {
-      Object _ret=null;
-      n.f0.accept(this, argu);
-      n.f1.accept(this, argu);
-      return _ret;
+      String name = n.f0.f0.tokenImage;
+      if (n.f1.present()){
+    	  NodeSequence sequence = (NodeSequence) n.f1.node;
+    	  Name nameNode = (Name) sequence.elementAt(1);
+    	  name += "." + nameNode.f0.tokenImage;
+      }
+      return name;
    }
 
    /**
@@ -79,10 +99,13 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
     * f1 -> ( "," Table() )*
     */
    public Object visit(Tables n, Object argu) {
-      Object _ret=null;
-      n.f0.accept(this, argu);
-      n.f1.accept(this, argu);
-      return _ret;
+      List<String> tableList = new ArrayList<String>();
+      tableList.add((String) n.f0.accept(this, argu));
+      for (Object sequenceObj : n.f1.nodes){
+    	  NodeSequence sequence = (NodeSequence) sequenceObj;
+    	  tableList.add((String) sequence.elementAt(1).accept(this, argu));
+      }
+      return tableList;
    }
 
    /**
@@ -90,10 +113,7 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
     * f1 -> [ <AS> Name() ]
     */
    public Object visit(Table n, Object argu) {
-      Object _ret=null;
-      n.f0.accept(this, argu);
-      n.f1.accept(this, argu);
-      return _ret;
+      return n.f0.f0.tokenImage;
    }
 
    /**
@@ -101,10 +121,7 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
     * f1 -> AndExpression()
     */
    public Object visit(Where n, Object argu) {
-      Object _ret=null;
-      n.f0.accept(this, argu);
-      n.f1.accept(this, argu);
-      return _ret;
+      return n.f1.accept(this, argu);
    }
 
    /**
@@ -112,10 +129,22 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
     * f1 -> ( <AND> OrExpression() )*
     */
    public Object visit(AndExpression n, Object argu) {
-      Object _ret=null;
-      n.f0.accept(this, argu);
-      n.f1.accept(this, argu);
-      return _ret;
+	     de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.AndExpression expr =
+	             new de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.AndExpression();
+	     
+	     ArrayList<de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.OrExpression> list = 
+	    		 new ArrayList<de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.OrExpression>();
+	     
+	     list.add((de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.OrExpression) n.f0.accept(this, argu));
+	     for (Object node : n.f1.nodes){
+	    	 NodeSequence sequence = (NodeSequence) node;
+	    	 de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.OrExpression orExpr =
+	    			 (de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.OrExpression) 
+	    			 sequence.elementAt(1).accept(this, argu);
+	    	 list.add(orExpr);
+	     }
+	     expr.setExpressions(list);
+	     return expr;
    }
 
    /**
@@ -128,8 +157,18 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
      de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.OrExpression expr =
              new de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.OrExpression();
      
-     // TODO: Continue with implementation here
+     ArrayList<de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.EqualityExpression> list = 
+    		 new ArrayList<de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.EqualityExpression>();
      
+     list.add((de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.EqualityExpression) n.f1.accept(this, argu));
+     for (Object node : n.f2.nodes){
+    	 NodeSequence sequence = (NodeSequence) node;
+    	 de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.EqualityExpression eqExpr =
+    			 (de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.EqualityExpression) 
+    			 sequence.elementAt(1).accept(this, argu);
+    	 list.add(eqExpr);
+     }
+     expr.setExpressions(list);
      return expr;
    }
 
@@ -233,13 +272,38 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
     * f4 -> [ Where() ]
     */
    public Object visit(Update n, Object argu) {
-      Object _ret=null;
-      n.f0.accept(this, argu);
-      n.f1.accept(this, argu);
-      n.f2.accept(this, argu);
-      n.f3.accept(this, argu);
-      n.f4.accept(this, argu);
-      return _ret;
+		  de.uniluebeck.ifis.anf.dbsystem.algebra.tableOperations.Update updateOperation =
+		             new de.uniluebeck.ifis.anf.dbsystem.algebra.tableOperations.Update();
+		  
+		  List<String> columnList = new ArrayList<String>();
+		  
+		  // Set table name
+		  String tablename = n.f1.f0.f0.tokenImage;
+		  updateOperation.setName(tablename);
+		  
+		  de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table table = de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table.loadTable(tablename); 
+		  
+		  for (String columnName : table.getColumnNames()){
+			  columnList.add(columnName);
+		  }
+		 
+	      List<String[]> assignList = (List<String[]>) n.f3.accept(this, argu);
+		  String[] columnNames = new String[assignList.size()];
+		  String[] values = new String[assignList.size()];
+	      for (int i = 0; i < assignList.size(); ++i){
+	    	  columnNames[i] = assignList.get(i)[0];
+	    	  values[i] = assignList.get(i)[1];
+	      }
+	      
+	      updateOperation.setColumnNames(columnNames);
+	      updateOperation.setValues(values);
+	      
+	      if (n.f4.present()){
+	    	  updateOperation.setWhereClause((de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.AndExpression) 
+	    			  n.f4.node.accept(this, columnList));
+	      }
+	      this.executionPlan = updateOperation;
+	      return null;
    }
 
    /**
@@ -247,10 +311,13 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
     * f1 -> ( "," AssignExpression() )*
     */
    public Object visit(AssignExpressions n, Object argu) {
-      Object _ret=null;
-      n.f0.accept(this, argu);
-      n.f1.accept(this, argu);
-      return _ret;
+      List<String[]> assignList = new ArrayList<String[]>();
+      assignList.add((String[]) n.f0.accept(this, argu));
+      for (Object sequenceObj : n.f1.nodes){
+    	  NodeSequence sequence = (NodeSequence) sequenceObj;
+    	  assignList.add((String[]) sequence.elementAt(1).accept(this, argu));
+      }
+      return assignList;
    }
 
    /**
@@ -259,11 +326,11 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
     * f2 -> LiteralExpression()
     */
    public Object visit(AssignExpression n, Object argu) {
-      Object _ret=null;
-      n.f0.accept(this, argu);
-      n.f1.accept(this, argu);
-      n.f2.accept(this, argu);
-      return _ret;
+      String[] assign = new String[2];
+      
+      assign[0] = n.f0.f0.tokenImage;
+      assign[1] = n.f2.f0.tokenImage;
+      return assign;
    }
 
    /**
@@ -282,12 +349,27 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
     * f3 -> [ Where() ]
     */
    public Object visit(Delete n, Object argu) {
-      Object _ret=null;
-      n.f0.accept(this, argu);
-      n.f1.accept(this, argu);
-      n.f2.accept(this, argu);
-      n.f3.accept(this, argu);
-      return _ret;
+	  de.uniluebeck.ifis.anf.dbsystem.algebra.tableOperations.Delete deleteOperation =
+	             new de.uniluebeck.ifis.anf.dbsystem.algebra.tableOperations.Delete();
+	  
+	  List<String> columnList = new ArrayList<String>();
+	  
+	  // Set table name
+	  String tablename = n.f2.f0.f0.tokenImage;
+	  deleteOperation.setName(tablename);
+	  
+	  de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table table = de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table.loadTable(tablename); 
+	  
+	  for (String columnName : table.getColumnNames()){
+		  columnList.add(columnName);
+	  }
+	  
+      if (n.f3.present()){
+    	  deleteOperation.setWhereClause((de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.AndExpression) 
+    			  n.f3.node.accept(this, columnList));
+      }
+      this.executionPlan = deleteOperation;
+      return null;
    }
 
    /**
