@@ -1,7 +1,5 @@
 package de.uniluebeck.ifis.anf.dbsystem.algebra.nodes;
 
-import de.uniluebeck.ifis.anf.dbsystem.Application;
-
 /**
  * @author seidel
  */

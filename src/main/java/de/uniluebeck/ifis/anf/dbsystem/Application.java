@@ -1,7 +1,5 @@
 package de.uniluebeck.ifis.anf.dbsystem;
 
-
-import de.uniluebeck.ifis.anf.dbsystem.algebra.SimpleSQLToRelAlgVisitor;
 import java.io.StringReader;
 import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.ITreeNode;
 import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Relation;
@@ -9,6 +7,7 @@ import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table;
 import de.uniluebeck.ifis.anf.dbsystem.parser.gene.ParseException;
 import de.uniluebeck.ifis.anf.dbsystem.parser.gene.SimpleSQLParser;
 import de.uniluebeck.ifis.anf.dbsystem.parser.syntaxtree.CompilationUnit;
+import de.uniluebeck.ifis.anf.dbsystem.algebra.SimpleSQLToRelAlgVisitor;
 
 /**
  * DB-System main application.
@@ -24,15 +23,10 @@ public class Application
    * @param args Array of commandline arguments
    */
   public static void main(String[] args)
-  {  
-	  
-//	  
+  {
     // TODO: Add tests here?
-
-      Application.createKundenDB();
-      Application.executeQuery("select ID, Vorname from Kunde where ID = \"Kunde1\" or Vorname = \"KVorname2\"");
-      
-
+    Application.createKundenDB();
+    Application.executeQuery("select ID, Vorname from Kunde where ID = \"Kunde1\" or Vorname = \"KVorname2\"");
   }
 
   /**

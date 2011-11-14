@@ -136,15 +136,15 @@ public class ApplicationTest
     Application.createKundenDB();
 
     Table table = Application.executeQuery("select Titel from Buch where ID = \"Buch2\"");
-    this.printTable(table);
     assertTrue(table.getRows().size() == 1);
     assertTrue(table.getRow(0)[0].equals("\"Kennedys Hirn\""));
-
-    Application.executeQuery("update Kunde set Vorname = \"Max\", Nachname = \"Mustermann\" where ID = \"Kunde1\";");
-    table = Application.executeQuery("select Nachname from Kunde where ID = \"Kunde1\";");
     this.printTable(table);
+    
+    table = Application.executeQuery("update Kunde set Vorname = \"Max\", Name = \"Mustermann\" where ID = \"Kunde1\"");
+    table = Application.executeQuery("select Name from Kunde where ID = \"Kunde1\"");
     assertTrue(table.getRows().size() == 1);
     assertTrue(table.getRow(0)[0].equals("\"Mustermann\""));
+    this.printTable(table);
   }
 
   /**
