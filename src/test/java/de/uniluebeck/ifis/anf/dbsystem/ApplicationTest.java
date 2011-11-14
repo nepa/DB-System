@@ -127,21 +127,24 @@ public class ApplicationTest
     this.printTable(table);
   }
   
-  @Test(timeout = 1000)
-  public void testSQLQueries(){
-	  Application.createKundenDB();
-	  
-	  Table table = Application.executeQuery("select Titel from Buch where ID = \"Buch2\";");
-	  printTable(table);
-	  assertTrue(table.getRows().size() == 1);
-	  assertTrue(table.getRow(0)[0].equals("\"Kennedys Hirn\""));
-	  
-	  Application.executeQuery("update Kunde set Vorname = \"Max\", Nachname = \"Mustermann\" where ID = \"Kunde1\";");
-	  table = Application.executeQuery("select Nachname from Kunde where ID = \"Kunde1\";");
-	  printTable(table);
-	  assertTrue(table.getRows().size() == 1);
-	  assertTrue(table.getRow(0)[0].equals("\"Mustermann\""));
-	  
+  /**
+   * Test execution of SQL queries.
+   */
+  @Test(timeout = 10000)
+  public void testSQLQueries()
+  {
+    Application.createKundenDB();
+
+    Table table = Application.executeQuery("select Titel from Buch where ID = \"Buch2\"");
+    this.printTable(table);
+    assertTrue(table.getRows().size() == 1);
+    assertTrue(table.getRow(0)[0].equals("\"Kennedys Hirn\""));
+
+    Application.executeQuery("update Kunde set Vorname = \"Max\", Nachname = \"Mustermann\" where ID = \"Kunde1\";");
+    table = Application.executeQuery("select Nachname from Kunde where ID = \"Kunde1\";");
+    this.printTable(table);
+    assertTrue(table.getRows().size() == 1);
+    assertTrue(table.getRow(0)[0].equals("\"Mustermann\""));
   }
 
   /**

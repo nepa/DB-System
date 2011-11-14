@@ -16,7 +16,8 @@ import java.io.ObjectOutputStream;
 public class Table implements Serializable
 {
   /** Absolute path to folder, where tables are stored in file system (with trailing slash!) */
-  public static final String DATABASE_PATH = System.getProperty("user.home") + "/anfrage/repo/database/";
+//  public static final String DATABASE_PATH = System.getProperty("user.home") + "/anfrage/repo/database/";
+  public static final String DATABASE_PATH = System.getProperty("user.home") + "/NetBeansProjects/DB-System/database/";
 
   /** File extension for database tables in file system (with leading dot!) */
   public static final String DATABASE_TABLE_FILE_EXTENSION = ".dbt";
@@ -236,53 +237,60 @@ public class Table implements Serializable
   @Override
   public String toString()
   {
-    // Amount of characters that are shown from content
-    int n = 20;
-
-    // Generate header for table output
-    String tableHeader = "| ";
-    String columnName = "";
-    for (int i = 0; i < this.columnNames.length; ++i)
+    String result = String.format("Table: '%s' alias '%s' [drop = %b]\n\n%s\n%s\n%s",
+            this.name, this.alias, this.drop, "-----------------", "| <Empty table> |", "-----------------");
+    
+    if (null != this.columnNames)
     {
-      columnName = (this.columnNames[i].length() > n ? this.columnNames[i].substring(0, n - 3) + "..." : this.columnNames[i]);
-      tableHeader += String.format("%-" + n + "s |", columnName);
+      // Amount of characters that are shown from content
+      int n = 20;
 
-      if (i < this.columnNames.length - 1)
+      // Generate header for table output
+      String tableHeader = "| ";
+      String columnName = "";
+
+      for (int i = 0; i < this.columnNames.length; ++i)
       {
-        tableHeader += " ";
-      }
-    }
+        columnName = (this.columnNames[i].length() > n ? this.columnNames[i].substring(0, n - 3) + "..." : this.columnNames[i]);
+        tableHeader += String.format("%-" + n + "s |", columnName);
 
-    // Create line of '-' characters
-    String line = "";
-    for (int i = 0; i < tableHeader.length(); ++i)
-    {
-      line += "-";
-    }
-
-    // Generate output with content of table
-    String tableContent = "";
-    String rowContent = "";
-    for (int i = 0; i < this.rows.size(); ++i)
-    {
-      tableContent += "| ";
-      for (int j = 0; j < this.rows.get(i).length; ++j)
-      {
-        rowContent = (this.rows.get(i)[j].length() > n ? this.rows.get(i)[j].substring(0, n - 3) + "..." : this.rows.get(i)[j]);
-        tableContent += String.format("%-" + n + "s |", rowContent);
-
-        // Add space in every row
-        if (i < this.rows.size())
+        if (i < this.columnNames.length - 1)
         {
-          tableContent += " ";
+          tableHeader += " ";
         }
       }
-      tableContent += "\n";
+
+      // Create line of '-' characters
+      String line = "";
+      for (int i = 0; i < tableHeader.length(); ++i)
+      {
+        line += "-";
+      }
+
+      // Generate output with content of table
+      String tableContent = "";
+      String rowContent = "";
+      for (int i = 0; i < this.rows.size(); ++i)
+      {
+        tableContent += "| ";
+        for (int j = 0; j < this.rows.get(i).length; ++j)
+        {
+          rowContent = (this.rows.get(i)[j].length() > n ? this.rows.get(i)[j].substring(0, n - 3) + "..." : this.rows.get(i)[j]);
+          tableContent += String.format("%-" + n + "s |", rowContent);
+
+          // Add space in every row
+          if (i < this.rows.size())
+          {
+            tableContent += " ";
+          }
+        }
+        tableContent += "\n";
+      }
+      
+      result = String.format("Table: '%s' alias '%s' [drop = %b]\n\n%s\n%s\n%s\n%s%s",
+              this.name, this.alias, this.drop, line, tableHeader, line, tableContent, line);
     }
-
-    String result = String.format("Table: '%s' alias '%s' [drop = %b]\n\n%s\n%s\n%s\n%s%s",
-            this.name, this.alias, this.drop, line, tableHeader, line, tableContent, line);
-
+    
     return result;
   }
 }
