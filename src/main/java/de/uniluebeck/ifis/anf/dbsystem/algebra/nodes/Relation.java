@@ -1,12 +1,45 @@
 package de.uniluebeck.ifis.anf.dbsystem.algebra.nodes;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author seidel
  */
 public class Relation implements ITreeNode
 {
+
+	public static ITreeNode createSelection(List<String> columnNames,
+			List<String> tableNames, AndExpression whereClause) {
+		Projection projection = new Projection();
+		projection.setColumnNames(columnNames.toArray(new String[0]));
+		
+		OneChildNode lowerNode = projection;
+		
+		if (whereClause != null){
+			Selection selection = new Selection();
+			selection.setExpression(whereClause);
+			projection.setChild(selection);
+			lowerNode = selection;
+		}
+		
+		for (int i = 0; i < tableNames.size() - 1; ++i){
+			CrossProduct cross = new CrossProduct();
+			cross.setSecondChild(Table.loadTable(tableNames.get(i)).toRelation());
+			lowerNode.setChild(cross);
+			lowerNode = cross;
+		}
+		
+		lowerNode.setChild(Table.loadTable(tableNames.get(tableNames.size() - 1)).toRelation());
+		
+		return projection;
+
+	}
+	
+	public static ITreeNode createSelection(List<String> columnNames, List<String> tableNames){
+		return createSelection(columnNames, tableNames, null);
+	}
+	
   private String name;
 
   private String alias;
