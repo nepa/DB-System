@@ -126,6 +126,17 @@ public class ApplicationTest
     assertTrue("Drop flag must be set for table.", table.isDropped());
     this.printTable(table);
   }
+  
+  @Test(timeout = 1000)
+  public void testSQLQueries(){
+	  Application.createKundenDB();
+	  
+	  Table table = Application.executeQuery("select from Buch where ID = \"Buch2\";");
+	  assertTrue(table.getRows().size() == 1);
+	  assertTrue(table.getRow(0)[1].equals("\"Kennedys Hirn\""));
+	  Application.executeQuery("update Kunde set Vorname = \"Max\", Nachname = \"Mustermann\" where ID = \"Kunde1\";");
+	  
+  }
 
   /**
    * Private helper method to test serialization of Table objects.
