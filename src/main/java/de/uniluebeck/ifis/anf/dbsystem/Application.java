@@ -30,7 +30,7 @@ public class Application
     // TODO: Add tests here?
 
       Application.createKundenDB();
-      Application.executeQuery("delete from Kunde where ID = \"Kunde1\"; ");
+      Application.executeQuery("select ID, Vorname from Kunde where ID = \"Kunde1\" or Vorname = \"KVorname2\"");
       
 
   }
@@ -49,7 +49,6 @@ public class Application
 
     // Execute execution plan
     Relation result = Application.executePlan(executionPlan);
-    
     Application.printTable(result.toTable());
     
     return result.toTable();
