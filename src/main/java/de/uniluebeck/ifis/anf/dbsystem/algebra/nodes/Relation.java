@@ -3,6 +3,8 @@ package de.uniluebeck.ifis.anf.dbsystem.algebra.nodes;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uniluebeck.ifis.anf.dbsystem.Application;
+
 /**
  * @author seidel
  */
@@ -29,9 +31,8 @@ public class Relation implements ITreeNode
 			lowerNode.setChild(cross);
 			lowerNode = cross;
 		}
-		
-		lowerNode.setChild(Table.loadTable(tableNames.get(tableNames.size() - 1)).toRelation());
-		
+		Table table = Table.loadTable(tableNames.get(tableNames.size() - 1));
+		lowerNode.setChild(table.toRelation());
 		return projection;
 
 	}

@@ -1,5 +1,7 @@
 package de.uniluebeck.ifis.anf.dbsystem.algebra.nodes;
 
+import de.uniluebeck.ifis.anf.dbsystem.Application;
+
 /**
  * @author seidel
  */
@@ -20,8 +22,10 @@ public class Projection extends OneChildNode
   public Relation evaluate()
   {
     Relation relation = this.getChild().evaluate();
-    
-    Relation result = new Relation();    
+    Relation result = new Relation();
+    result.setAlias(relation.getAlias());
+    result.setName(relation.getName());
+    result.setColumnNames(columnNames);
     for (Row row: relation.getRows())
     {
       Row newRow = new Row();
@@ -36,6 +40,7 @@ public class Projection extends OneChildNode
           }
         }
       }
+      result.getRows().add(newRow);
     }
     
     return result;
