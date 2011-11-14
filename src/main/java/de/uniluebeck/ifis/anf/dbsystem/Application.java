@@ -1,5 +1,6 @@
 package de.uniluebeck.ifis.anf.dbsystem;
 
+import de.uniluebeck.ifis.anf.dbsystem.algebra.SimpleSQLToRelAlgVisitor;
 import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.ITreeNode;
 import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Relation;
 import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table;
@@ -24,6 +25,8 @@ public class Application
    */
   public static void main(String[] args)
   {
+	  Application.executeQuery("insert into Buch values (\"6\", \"Langweiliges Buch\");");
+	  
     // TODO: Add tests here?
   }
   
@@ -64,8 +67,9 @@ public class Application
     {
       CompilationUnit compUnit = parser.CompilationUnit();
       
-      ObjectDepthFirst visitor = new ObjectDepthFirst();
-      executionPlan = (ITreeNode)compUnit.accept(visitor, null); // TODO: Pass query as argu?
+      SimpleSQLToRelAlgVisitor visitor = new SimpleSQLToRelAlgVisitor();
+      compUnit.accept(visitor, null); // TODO: Pass query as argu?
+      executionPlan = visitor.getExecutionPlan();
     }
     catch (ParseException e)
     {

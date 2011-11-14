@@ -42,7 +42,9 @@ public class Insert extends TableOperation
     {
       newRow[i] = "";
     }
-    
+    if (this.getColumnNames() == null){
+    	this.setColumnNames(table.getColumnNames());
+    }
     for (int i = 0; i < table.getColumnNames().length; ++i)
     {
       for (int j = 0; j < this.columnNames.length; ++j)

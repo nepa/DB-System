@@ -393,7 +393,8 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
      List<String> columnNames = new ArrayList<String>();
      if (n.f3.present())
      {
-       ColumnNames columnNamesFromTree = (ColumnNames)(n.f3.node);
+       NodeSequence sequence = (NodeSequence) n.f3.node;
+       ColumnNames columnNamesFromTree = (ColumnNames) sequence.elementAt(1);
                
        // Add first column name
        columnNames.add(columnNamesFromTree.f0.f0.toString());
@@ -401,7 +402,8 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
        // Add other column names
        for (Object columnName: columnNamesFromTree.f1.nodes)
        {
-         columnNames.add(((Name)columnName).f0.toString());
+    	 sequence = (NodeSequence) columnName;
+         columnNames.add(((Name)sequence.elementAt(1)).f0.toString());
        }
        
        insertOperation.setColumnNames(columnNames.toArray(new String[0]));
