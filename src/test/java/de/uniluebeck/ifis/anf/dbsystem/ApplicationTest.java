@@ -131,10 +131,16 @@ public class ApplicationTest
   public void testSQLQueries(){
 	  Application.createKundenDB();
 	  
-	  Table table = Application.executeQuery("select from Buch where ID = \"Buch2\";");
+	  Table table = Application.executeQuery("select Titel from Buch where ID = \"Buch2\";");
+	  printTable(table);
 	  assertTrue(table.getRows().size() == 1);
-	  assertTrue(table.getRow(0)[1].equals("\"Kennedys Hirn\""));
+	  assertTrue(table.getRow(0)[0].equals("\"Kennedys Hirn\""));
+	  
 	  Application.executeQuery("update Kunde set Vorname = \"Max\", Nachname = \"Mustermann\" where ID = \"Kunde1\";");
+	  table = Application.executeQuery("select Nachname from Kunde where ID = \"Kunde1\";");
+	  printTable(table);
+	  assertTrue(table.getRows().size() == 1);
+	  assertTrue(table.getRow(0)[0].equals("\"Mustermann\""));
 	  
   }
 

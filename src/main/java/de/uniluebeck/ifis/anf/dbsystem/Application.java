@@ -26,26 +26,33 @@ public class Application
   public static void main(String[] args)
   {  
 	  
-	  Application.executeQuery("drop Buch_Bestellung;");
+//	  
     // TODO: Add tests here?
-    //Application.createKundenDB();
+
+      Application.createKundenDB();
+      Application.executeQuery("delete from Kunde where ID = \"Kunde1\"; ");
+      
+
   }
 
   /**
    * Execute an SimpleSQL query on the database and print result.
    * 
    * @param query SimpleSQL query
+   * 
+   * @return Resulting table object
    */
-  public static void executeQuery(final String query)
+  public static Table executeQuery(final String query)
   {
     // Translate SimpleSQL query to execution plan
     ITreeNode executionPlan = Application.sqlToRelationenAlgebra(query);
 
     // Execute execution plan
     Relation result = Application.executePlan(executionPlan);
-
-    // Print resulting table
+    
     Application.printTable(result.toTable());
+    
+    return result.toTable();
   }
 
   /**
@@ -148,7 +155,6 @@ public class Application
     Application.executeQuery("insert into Buch_Autor (B_ID,Autorenname) values (\"Buch8\",\"Andrew S. Tanenbaum\");");
     Application.executeQuery("insert into Buch_Autor (B_ID,Autorenname) values (\"Buch9\",\"Martin Kluger\");");
     Application.executeQuery("insert into Buch_Autor (B_ID,Autorenname) values (\"Buch10\",\"Henning Mankell\");");
-
 
     Application.executeQuery("insert into Kunde_Bestellung (K_ID,B_ID) values (\"Kunde1\",\"Bestellung1\");");
     Application.executeQuery("insert into Kunde_Bestellung (K_ID,B_ID) values (\"Kunde1\",\"Bestellung2\");");
