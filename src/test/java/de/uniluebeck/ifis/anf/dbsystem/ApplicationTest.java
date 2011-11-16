@@ -135,16 +135,31 @@ public class ApplicationTest
   {
     Application.createKundenDB();
 
+    // Test SELECT statement
     Table table = Application.executeQuery("select Titel from Buch where ID = \"Buch2\"");
     assertTrue(table.getRows().size() == 1);
-    assertTrue(table.getRow(0)[0].equals("\"Kennedys Hirn\""));
+    assertTrue(table.getRow(0)[0].equals("Kennedys Hirn"));
     this.printTable(table);
     
+    // Test INSERT statement
+    table = Application.executeQuery("insert into Buch (ID, Titel) values (\"MeinBuch\", \"Titel von meinem Buch\")");
+    table = Application.executeQuery("select ID, Titel from Buch where ID = \"MeinBuch\"");
+    assertTrue(table.getRows().size() == 1);
+    assertTrue(table.getRow(0)[1].equals("Titel von meinem Buch"));
+    this.printTable(table);
+
+    // Test UPDATE statement
     table = Application.executeQuery("update Kunde set Vorname = \"Max\", Name = \"Mustermann\" where ID = \"Kunde1\"");
     table = Application.executeQuery("select Name from Kunde where ID = \"Kunde1\"");
     assertTrue(table.getRows().size() == 1);
-    assertTrue(table.getRow(0)[0].equals("\"Mustermann\""));
+    assertTrue(table.getRow(0)[0].equals("Mustermann"));
     this.printTable(table);
+
+    // TODO: Test DELETE statement
+
+    // TODO: Test CREATE TABLE statement
+
+    // TODO: Test DROP TABLE statement
   }
 
   /**

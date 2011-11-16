@@ -14,9 +14,6 @@ import de.uniluebeck.ifis.anf.dbsystem.algebra.SimpleSQLToRelAlgVisitor;
  */
 public class Application
 {
-  /** Path to customer database */
-  public static final String KUNDENDB = "";
-
   /**
    * Application program to run DB-System application.
    *
@@ -30,7 +27,7 @@ public class Application
   }
 
   /**
-   * Execute an SimpleSQL query on the database and print result.
+   * Execute a SimpleSQL query on the database and print result.
    * 
    * @param query SimpleSQL query
    * 
@@ -43,8 +40,8 @@ public class Application
 
     // Execute execution plan
     Relation result = Application.executePlan(executionPlan);
-    Application.printTable(result.toTable());
-    
+    Application.printTable(result.toTable()); // TODO: Remove after debugging
+
     return result.toTable();
   }
 
@@ -68,9 +65,8 @@ public class Application
     {
       CompilationUnit compUnit = parser.CompilationUnit();
       SimpleSQLToRelAlgVisitor visitor = new SimpleSQLToRelAlgVisitor();
-      compUnit.accept(visitor, null); // TODO: Pass query as argu?
+      compUnit.accept(visitor, null);
       executionPlan = visitor.getExecutionPlan();
-
     }
     catch (ParseException e)
     {
@@ -80,6 +76,13 @@ public class Application
     return executionPlan;
   }
 
+  /**
+   * Evaluate an execution plan and return Relation object as result.
+   *
+   * @param executionPlan Execution plan for evaluation
+   *
+   * @return Resulting Relation object
+   */
   private static Relation executePlan(final ITreeNode executionPlan)
   {
     return executionPlan.evaluate();
@@ -90,12 +93,11 @@ public class Application
    */
   public static void printTable(final Table table)
   {
-    // Print table object
     System.out.println("\n\n" + table + "\n\n");
   }
 
   /**
-   * Private helper method to create KundenDB once.
+   * Private helper method to initially create and fill KundenDB.
    */
   public static void createKundenDB()
   {
