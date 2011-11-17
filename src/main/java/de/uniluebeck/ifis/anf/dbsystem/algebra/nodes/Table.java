@@ -36,9 +36,9 @@ public class Table implements Serializable
   {
     this.setName(name);
     this.setAlias(alias);
-    this.drop = false;
+    this.setDrop(false);
     this.setColumnNames(columnNames);
-    this.rows = new ArrayList<String[]>();
+    this.setRows(new ArrayList<String[]>());
   }
 
   public String getAlias()

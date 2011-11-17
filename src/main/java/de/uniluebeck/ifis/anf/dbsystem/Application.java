@@ -14,6 +14,11 @@ import de.uniluebeck.ifis.anf.dbsystem.algebra.SimpleSQLToRelAlgVisitor;
  */
 public class Application
 {
+  // TODO: "SELECT * FROM table" ermoeglichen
+  // TODO: Drop-Flag beim Loeschen von Tabellen pruefen
+  // TODO: TODOs in Table-Klasse pruefen (cross, projectTo usw.)
+  // TODO: Unit test fuer DROP TABLE schreiben
+  
   /**
    * Application program to run DB-System application.
    *
