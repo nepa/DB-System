@@ -1,6 +1,10 @@
 package de.uniluebeck.ifis.anf.dbsystem;
 
+import java.io.File;
+import java.util.Scanner;
 import java.io.StringReader;
+import java.io.FileNotFoundException;
+
 import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.ITreeNode;
 import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Relation;
 import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table;
@@ -14,6 +18,10 @@ import de.uniluebeck.ifis.anf.dbsystem.algebra.SimpleSQLToRelAlgVisitor;
  */
 public class Application
 {
+  /** Path to SimpleSQL queries (with trailing slash!) */
+  public static final String QUERY_PATH = System.getProperty("user.home") +
+          "/NetBeansProjects/DB-System/src/test/resources/";
+
   // TODO: Drop-Flag beim Loeschen von Tabellen pruefen
   // TODO: TODOs in Table-Klasse pruefen (cross, projectTo usw.)
   // TODO: Kreuzprodukt und Join testen!
@@ -28,9 +36,11 @@ public class Application
   {
     try
     {
-      // TODO: Add tests here?
+      // Create KundenDB
       Application.createKundenDB();
-      Application.executeQuery("select ID, Vorname from Kunde where ID = \"Kunde1\" or Vorname = \"KVorname2\"");
+      
+      // Execute some queries on KundenDB
+      Application.executeQueriesFromFile(QUERY_PATH + "sql.txt");
     }
     catch (Exception e)
     {
@@ -44,6 +54,8 @@ public class Application
    * @param query SimpleSQL query
    * 
    * @return Resulting table object
+   *
+   * @throws Exception Error during query execution
    */
   public static Table executeQuery(final String query) throws Exception
   {
@@ -60,6 +72,53 @@ public class Application
     Application.printTable(result.toTable());
 
     return result.toTable();
+  }
+
+  /**
+   * Load multiple SimpleSQL queries from a file and execute them.
+   *
+   * @param pathToFile Fully qualified path to the input file
+   *
+   * @return Number of executed queries
+   *
+   * @throws Exception Error during query execution
+   */
+  public static int executeQueriesFromFile(final String pathToFile) throws Exception
+  {
+    int queryCounter = 0;
+    Scanner inputFile = null;
+
+    // Try to load data from file
+    try
+    {
+      inputFile = new Scanner(new File(pathToFile));
+    }
+    catch (FileNotFoundException e)
+    {
+      String fileName = (new File(pathToFile).getName());
+      System.err.println(String.format("Could not load queries from file '%s'. It does not exist.", fileName));
+      System.exit(1);
+    }
+
+    // Process all queries by reading file line by line
+    while (null != inputFile && inputFile.hasNext())
+    {
+      // Get next line
+      String line = inputFile.nextLine();
+
+      // Check if line ends with semicolon
+      if (line.length() > 0 && (";").equals(String.valueOf(line.charAt(line.length() - 1))))
+      {
+        // Query is line without semicolon
+        String query = line.substring(0, line.length() -1);
+
+        // Execute query
+        Application.executeQuery(query);
+        queryCounter++;
+      }
+    }
+
+    return queryCounter;
   }
 
   /**
@@ -99,6 +158,8 @@ public class Application
    * @param executionPlan Execution plan for evaluation
    *
    * @return Resulting Relation object
+   *
+   * @throws Exception Error during execution
    */
   private static Relation executePlan(final ITreeNode executionPlan) throws Exception
   {
@@ -115,84 +176,11 @@ public class Application
 
   /**
    * Private helper method to initially create and fill KundenDB.
+   *
+   * @throws Exception Error during query execution
    */
   public static void createKundenDB() throws Exception
   {
-    Application.executeQuery("create table Buch (ID varchar , Titel varchar);");
-    Application.executeQuery("create table Kunde (ID varchar, Name varchar, Vorname varchar, Adresse varchar);");
-    Application.executeQuery("create table Bestellung (ID varchar, Datum varchar, Preis varchar, IstBezahlt varchar);");
-    Application.executeQuery("create table Buch_Autor (B_ID varchar, Autorenname varchar);");
-    Application.executeQuery("create table Kunde_Bestellung (K_ID varchar, B_ID varchar);");
-    Application.executeQuery("create table Buch_Bestellung (Bu_ID varchar, Be_ID varchar);");
-
-    Application.executeQuery("insert into Buch (ID,Titel) values (\"Buch1\",\"Grundlagen von Datenbanksystemen\");");
-    Application.executeQuery("insert into Buch (ID,Titel) values (\"Buch2\",\"Kennedys Hirn\");");
-    Application.executeQuery("insert into Buch (ID,Titel) values (\"Buch3\",\"Die rote Antilope\");");
-    Application.executeQuery("insert into Buch (ID,Titel) values (\"Buch4\",\"Einführung in die Automatentheorie, Formale Sprachen und Komplexitätstheorie\");");
-    Application.executeQuery("insert into Buch (ID,Titel) values (\"Buch5\",\"Java ist auch eine Insel\");");
-    Application.executeQuery("insert into Buch (ID,Titel) values (\"Buch6\",\"Verteilte Systeme. Grundlagen und Paradigmen\");");
-    Application.executeQuery("insert into Buch (ID,Titel) values (\"Buch7\",\"Der Schwarm\");");
-    Application.executeQuery("insert into Buch (ID,Titel) values (\"Buch8\",\"Computernetzwerke\");");
-    Application.executeQuery("insert into Buch (ID,Titel) values (\"Buch9\",\"Die Gehilfin\");");
-    Application.executeQuery("insert into Buch (ID,Titel) values (\"Buch10\",\"Tiefe\");");
-
-    Application.executeQuery("insert into Kunde (ID,Name,Vorname,Adresse) values (\"Kunde1\",\"KName1\",\"KVorname1\",\"KAdresse1\");");
-    Application.executeQuery("insert into Kunde (ID,Name,Vorname,Adresse) values (\"Kunde2\",\"KName2\",\"KVorname2\",\"KAdresse2\");");
-    Application.executeQuery("insert into Kunde (ID,Name,Vorname,Adresse) values (\"Kunde3\",\"KName3\",\"KVorname3\",\"KAdresse3\");");
-    Application.executeQuery("insert into Kunde (ID,Name,Vorname,Adresse) values (\"Kunde4\",\"KName4\",\"KVorname4\",\"KAdresse4\");");
-    Application.executeQuery("insert into Kunde (ID,Name,Vorname,Adresse) values (\"Kunde5\",\"KName5\",\"KVorname5\",\"KAdresse5\");");
-
-    Application.executeQuery("insert into Bestellung (ID,Datum,Preis,IstBezahlt) values (\"Bestellung1\",\"Datum1\",\"Preis1\",\"ja\");");
-    Application.executeQuery("insert into Bestellung (ID,Datum,Preis,IstBezahlt) values (\"Bestellung2\",\"Datum2\",\"Preis2\",\"nein\");");
-    Application.executeQuery("insert into Bestellung (ID,Datum,Preis,IstBezahlt) values (\"Bestellung3\",\"Datum3\",\"Preis3\",\"ja\");");
-    Application.executeQuery("insert into Bestellung (ID,Datum,Preis,IstBezahlt) values (\"Bestellung4\",\"Datum4\",\"Preis4\",\"nein\");");
-    Application.executeQuery("insert into Bestellung (ID,Datum,Preis,IstBezahlt) values (\"Bestellung5\",\"Datum5\",\"Preis5\",\"ja\");");
-    Application.executeQuery("insert into Bestellung (ID,Datum,Preis,IstBezahlt) values (\"Bestellung6\",\"Datum6\",\"Preis6\",\"ja\");");
-    Application.executeQuery("insert into Bestellung (ID,Datum,Preis,IstBezahlt) values (\"Bestellung7\",\"Datum7\",\"Preis7\",\"nein\");");
-    Application.executeQuery("insert into Bestellung (ID,Datum,Preis,IstBezahlt) values (\"Bestellung8\",\"Datum8\",\"Preis8\",\"ja\");");
-    Application.executeQuery("insert into Bestellung (ID,Datum,Preis,IstBezahlt) values (\"Bestellung9\",\"Datum9\",\"Preis9\",\"ja\");");
-    Application.executeQuery("insert into Bestellung (ID,Datum,Preis,IstBezahlt) values (\"Bestellung10\",\"Datum10\",\"Preis10\",\"ja\");");
-
-    Application.executeQuery("insert into Buch_Autor (B_ID,Autorenname) values (\"Buch1\",\"Ramez Elmasri\");");
-    Application.executeQuery("insert into Buch_Autor (B_ID,Autorenname) values (\"Buch1\",\"Shamkant B. Navathe\");");
-    Application.executeQuery("insert into Buch_Autor (B_ID,Autorenname) values (\"Buch2\",\"Henning Mankell\");");
-    Application.executeQuery("insert into Buch_Autor (B_ID,Autorenname) values (\"Buch3\",\"Henning Mankell\");");
-    Application.executeQuery("insert into Buch_Autor (B_ID,Autorenname) values (\"Buch4\",\"John E. Hopcroft\");");
-    Application.executeQuery("insert into Buch_Autor (B_ID,Autorenname) values (\"Buch4\",\"Rajeev Motwani\");");
-    Application.executeQuery("insert into Buch_Autor (B_ID,Autorenname) values (\"Buch4\",\"Jeffrey D. Ullman\");");
-    Application.executeQuery("insert into Buch_Autor (B_ID,Autorenname) values (\"Buch5\",\"Christian Ullenboom\");");
-    Application.executeQuery("insert into Buch_Autor (B_ID,Autorenname) values (\"Buch7\",\"Frank Schützing\");");
-    Application.executeQuery("insert into Buch_Autor (B_ID,Autorenname) values (\"Buch6\",\"Andrew S. Tanenbaum\");");
-    Application.executeQuery("insert into Buch_Autor (B_ID,Autorenname) values (\"Buch6\",\"Maarten van Steen\");");
-    Application.executeQuery("insert into Buch_Autor (B_ID,Autorenname) values (\"Buch8\",\"Andrew S. Tanenbaum\");");
-    Application.executeQuery("insert into Buch_Autor (B_ID,Autorenname) values (\"Buch9\",\"Martin Kluger\");");
-    Application.executeQuery("insert into Buch_Autor (B_ID,Autorenname) values (\"Buch10\",\"Henning Mankell\");");
-
-    Application.executeQuery("insert into Kunde_Bestellung (K_ID,B_ID) values (\"Kunde1\",\"Bestellung1\");");
-    Application.executeQuery("insert into Kunde_Bestellung (K_ID,B_ID) values (\"Kunde1\",\"Bestellung2\");");
-    Application.executeQuery("insert into Kunde_Bestellung (K_ID,B_ID) values (\"Kunde1\",\"Bestellung3\");");
-    Application.executeQuery("insert into Kunde_Bestellung (K_ID,B_ID) values (\"Kunde2\",\"Bestellung4\");");
-    Application.executeQuery("insert into Kunde_Bestellung (K_ID,B_ID) values (\"Kunde2\",\"Bestellung5\");");
-    Application.executeQuery("insert into Kunde_Bestellung (K_ID,B_ID) values (\"Kunde3\",\"Bestellung6\");");
-    Application.executeQuery("insert into Kunde_Bestellung (K_ID,B_ID) values (\"Kunde4\",\"Bestellung7\");");
-    Application.executeQuery("insert into Kunde_Bestellung (K_ID,B_ID) values (\"Kunde5\",\"Bestellung8\");");
-    Application.executeQuery("insert into Kunde_Bestellung (K_ID,B_ID) values (\"Kunde5\",\"Bestellung9\");");
-    Application.executeQuery("insert into Kunde_Bestellung (K_ID,B_ID) values (\"Kunde5\",\"Bestellung10\");");
-
-    Application.executeQuery("insert into Buch_Bestellung (Bu_ID,Be_ID) values (\"Buch1\",\"Bestellung1\");");
-    Application.executeQuery("insert into Buch_Bestellung (Bu_ID,Be_ID) values (\"Buch9\",\"Bestellung1\");");
-    Application.executeQuery("insert into Buch_Bestellung (Bu_ID,Be_ID) values (\"Buch3\",\"Bestellung1\");");
-    Application.executeQuery("insert into Buch_Bestellung (Bu_ID,Be_ID) values (\"Buch2\",\"Bestellung2\");");
-    Application.executeQuery("insert into Buch_Bestellung (Bu_ID,Be_ID) values (\"Buch3\",\"Bestellung3\");");
-    Application.executeQuery("insert into Buch_Bestellung (Bu_ID,Be_ID) values (\"Buch4\",\"Bestellung4\");");
-    Application.executeQuery("insert into Buch_Bestellung (Bu_ID,Be_ID) values (\"Buch10\",\"Bestellung4\");");
-    Application.executeQuery("insert into Buch_Bestellung (Bu_ID,Be_ID) values (\"Buch4\",\"Bestellung5\");");
-    Application.executeQuery("insert into Buch_Bestellung (Bu_ID,Be_ID) values (\"Buch1\",\"Bestellung5\");");
-    Application.executeQuery("insert into Buch_Bestellung (Bu_ID,Be_ID) values (\"Buch5\",\"Bestellung6\");");
-    Application.executeQuery("insert into Buch_Bestellung (Bu_ID,Be_ID) values (\"Buch6\",\"Bestellung7\");");
-    Application.executeQuery("insert into Buch_Bestellung (Bu_ID,Be_ID) values (\"Buch8\",\"Bestellung7\");");
-    Application.executeQuery("insert into Buch_Bestellung (Bu_ID,Be_ID) values (\"Buch7\",\"Bestellung8\");");
-    Application.executeQuery("insert into Buch_Bestellung (Bu_ID,Be_ID) values (\"Buch8\",\"Bestellung9\");");
-    Application.executeQuery("insert into Buch_Bestellung (Bu_ID,Be_ID) values (\"Buch9\",\"Bestellung10\");");
+    Application.executeQueriesFromFile(QUERY_PATH + "kundendb.txt");
   }
 }
