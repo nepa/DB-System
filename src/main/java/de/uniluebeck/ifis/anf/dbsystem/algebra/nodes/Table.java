@@ -115,6 +115,10 @@ public class Table implements Serializable
       result = (Table)objectInputStream.readObject();
       objectInputStream.close();
     }
+    catch (FileNotFoundException e)
+    {
+      System.err.println(String.format("Could not load table '%s'. It does not exist.", tableName));
+    }
     catch (Exception e)
     {
       e.printStackTrace();

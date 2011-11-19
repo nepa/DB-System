@@ -33,15 +33,15 @@ public class Update extends Delete
   {
     this.values = values;
   }
-  
+
   @Override
-  public Table execute()
+  public Table execute() throws Exception
   {
     Table table = Table.loadTable(this.name);
-    
+
     Relation relation = table.toRelation();
     List<Row> rows = this.getRelevantRows(relation);
-    
+
     // Update relevant rows
     for (Row row: rows)
     {
@@ -56,18 +56,10 @@ public class Update extends Delete
         }
       }
     }
-    
+
     table = relation.toTable();
-    
-    try
-    {
-      table.write();
-    }
-    catch (Exception e)
-    {
-      e.printStackTrace();
-    }
-    
+    table.write();
+
     return table;
   }
 }

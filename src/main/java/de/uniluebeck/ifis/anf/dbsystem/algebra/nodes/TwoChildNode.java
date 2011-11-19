@@ -16,4 +16,10 @@ public abstract class TwoChildNode extends OneChildNode
   {
     this.secondChild = secondChildNode;
   }
+  
+  @Override
+  public int getCosts() throws Exception
+  {
+    return this.getChild().getCosts() + this.getSecondChild().getCosts();
+  }
 }

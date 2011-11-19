@@ -10,49 +10,53 @@ import java.util.List;
 /**
  * @author seidel
  */
-public class Delete extends TableOperation {
-	protected AndExpression whereClause;
+public class Delete extends TableOperation
+{
+  protected AndExpression whereClause;
 
-	public AndExpression getWhereClause() {
-		return whereClause;
-	}
+  public AndExpression getWhereClause()
+  {
+    return whereClause;
+  }
 
-	public void setWhereClause(AndExpression whereClause) {
-		this.whereClause = whereClause;
-	}
+  public void setWhereClause(AndExpression whereClause)
+  {
+    this.whereClause = whereClause;
+  }
 
-	@Override
-	public Table execute() {
-		Table table = Table.loadTable(this.name);
+  @Override
+  public Table execute() throws Exception
+  {
+    Table table = Table.loadTable(this.name);
 
-		Relation relation = table.toRelation();
-		List<Row> rows = this.getRelevantRows(relation);
-		relation.getRows().removeAll(rows);
+    Relation relation = table.toRelation();
+    List<Row> rows = this.getRelevantRows(relation);
+    relation.getRows().removeAll(rows);
 
-		table = relation.toTable();
+    table = relation.toTable();
+    table.write();
 
-		try {
-			table.write();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+    return table;
+  }
 
-		return table;
-	}
+  protected List<Row> getRelevantRows(Relation relation) throws Exception
+  {
+    if (whereClause != null)
+    {
+      Selection selection = new Selection();
+      selection.setChild(relation);
+      selection.setExpression(whereClause);
+      return selection.evaluate().getRows();
+    }
+    else
+    {
+      return relation.getRows();
+    }
+  }
 
-	protected List<Row> getRelevantRows(Relation relation) {
-		if (whereClause != null) {
-			Selection selection = new Selection();
-			selection.setChild(relation);
-			selection.setExpression(whereClause);
-			return selection.evaluate().getRows();
-		} else {
-			return relation.getRows();
-		}
-	}
-
-	@Override
-	public Relation evaluate() {
-		return this.execute().toRelation();
-	}
+  @Override
+  public Relation evaluate() throws Exception
+  {
+    return this.execute().toRelation();
+  }
 }

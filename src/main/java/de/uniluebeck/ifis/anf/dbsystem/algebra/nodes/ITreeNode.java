@@ -1,6 +1,14 @@
 package de.uniluebeck.ifis.anf.dbsystem.algebra.nodes;
 
-public interface ITreeNode
+/**
+ * @author seidel
+ */
+public abstract class ITreeNode
 {
-  public Relation evaluate();
+  abstract public Relation evaluate() throws Exception;
+
+  public int getCosts() throws Exception
+  {
+    return 0;
+  }
 }

@@ -33,7 +33,7 @@ public class Insert extends TableOperation
   }
 
   @Override
-  public Table execute()
+  public Table execute() throws Exception
   {
     Table table = Table.loadTable(this.name);
 
@@ -42,8 +42,9 @@ public class Insert extends TableOperation
     {
       newRow[i] = "";
     }
-    if (this.getColumnNames() == null){
-    	this.setColumnNames(table.getColumnNames());
+    if (this.getColumnNames() == null)
+    {
+      this.setColumnNames(table.getColumnNames());
     }
     for (int i = 0; i < table.getColumnNames().length; ++i)
     {
@@ -57,21 +58,14 @@ public class Insert extends TableOperation
     }
 
     table.addRow(newRow);
-    
-    try
-    {
-      table.write();
-    }
-    catch (Exception e)
-    {
-      e.printStackTrace();
-    }
-    
+
+    table.write();
+
     return table;
   }
-  
+
   @Override
-  public Relation evaluate()
+  public Relation evaluate() throws Exception
   {
     return this.execute().toRelation();
   }

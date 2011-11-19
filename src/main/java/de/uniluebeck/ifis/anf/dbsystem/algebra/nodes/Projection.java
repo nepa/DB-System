@@ -17,13 +17,15 @@ public class Projection extends OneChildNode
     this.columnNames = columnNames;
   }
 
-  public Relation evaluate()
+  @Override
+  public Relation evaluate() throws Exception
   {
     Relation relation = this.getChild().evaluate();
     Relation result = new Relation();
     result.setAlias(relation.getAlias());
     result.setName(relation.getName());
-    result.setColumnNames(columnNames);
+    result.setColumnNames(this.columnNames);
+    
     for (Row row: relation.getRows())
     {
       Row newRow = new Row();
@@ -42,5 +44,22 @@ public class Projection extends OneChildNode
     }
     
     return result;
+  }
+
+  /**
+   * Calculate costs for projection:
+   * 
+   * Rows(T) * n
+   *
+   * Where n is the number of projected columns.
+   *
+   * @return Costs of projection
+   *
+   * @throws Exception Error during evaluation
+   */
+  @Override
+  public int getCosts() throws Exception
+  {
+    return this.evaluate().getRows().size() * this.columnNames.length;
   }
 }

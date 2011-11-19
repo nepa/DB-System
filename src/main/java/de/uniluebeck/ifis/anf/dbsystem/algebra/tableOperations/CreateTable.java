@@ -21,24 +21,16 @@ public class CreateTable extends TableOperation
   }
 
   @Override
-  public Table execute()
+  public Table execute() throws Exception
   {
     Table table = new Table(this.name, this.name, this.columnNames);
-
-    try
-    {
-      table.write();
-    }
-    catch (Exception e)
-    {
-      e.printStackTrace();
-    }
+    table.write();
 
     return table;
   }
 
   @Override
-  public Relation evaluate()
+  public Relation evaluate() throws Exception
   {
     return this.execute().toRelation();
   }

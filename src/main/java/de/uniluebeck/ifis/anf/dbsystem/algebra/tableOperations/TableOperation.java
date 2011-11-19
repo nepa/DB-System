@@ -6,7 +6,7 @@ import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table;
 /**
  * @author seidel
  */
-abstract public class TableOperation implements ITreeNode
+abstract public class TableOperation extends ITreeNode
 {
   protected String name;
 
@@ -20,5 +20,5 @@ abstract public class TableOperation implements ITreeNode
     this.name = name;
   }
   
-  abstract public Table execute();  
+  abstract public Table execute() throws Exception;
 }

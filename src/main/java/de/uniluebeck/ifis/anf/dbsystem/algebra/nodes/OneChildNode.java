@@ -3,7 +3,7 @@ package de.uniluebeck.ifis.anf.dbsystem.algebra.nodes;
 /**
  * @author seidel
  */
-public abstract class OneChildNode implements ITreeNode
+public abstract class OneChildNode extends ITreeNode
 {
   private ITreeNode childNode;
   
@@ -15,5 +15,11 @@ public abstract class OneChildNode implements ITreeNode
   public void setChild(ITreeNode childNode)
   {
     this.childNode = childNode;
+  }
+
+  @Override
+  public int getCosts() throws Exception
+  {
+    return this.childNode.getCosts();
   }
 }

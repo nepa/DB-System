@@ -3,44 +3,43 @@ package de.uniluebeck.ifis.anf.dbsystem.algebra.nodes;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uniluebeck.ifis.anf.dbsystem.Application;
-
 /**
  * @author seidel
  */
-public class Relation implements ITreeNode
+public class Relation extends ITreeNode
 {
+  public static ITreeNode createSelection(List<String> columnNames, List<String> tableNames, AndExpression whereClause)
+  {
+    Projection projection = new Projection();
+    projection.setColumnNames(columnNames.toArray(new String[0]));
 
-	public static ITreeNode createSelection(List<String> columnNames,
-			List<String> tableNames, AndExpression whereClause) {
-		Projection projection = new Projection();
-		projection.setColumnNames(columnNames.toArray(new String[0]));
-		
-		OneChildNode lowerNode = projection;
-		
-		if (whereClause != null){
-			Selection selection = new Selection();
-			selection.setExpression(whereClause);
-			projection.setChild(selection);
-			lowerNode = selection;
-		}
-		
-		for (int i = 0; i < tableNames.size() - 1; ++i){
-			CrossProduct cross = new CrossProduct();
-			cross.setSecondChild(Table.loadTable(tableNames.get(i)).toRelation());
-			lowerNode.setChild(cross);
-			lowerNode = cross;
-		}
-		Table table = Table.loadTable(tableNames.get(tableNames.size() - 1));
-		lowerNode.setChild(table.toRelation());
-		return projection;
+    OneChildNode lowerNode = projection;
 
-	}
-	
-	public static ITreeNode createSelection(List<String> columnNames, List<String> tableNames){
-		return createSelection(columnNames, tableNames, null);
-	}
-	
+    if (whereClause != null)
+    {
+      Selection selection = new Selection();
+      selection.setExpression(whereClause);
+      projection.setChild(selection);
+      lowerNode = selection;
+    }
+
+    for (int i = 0; i < tableNames.size() - 1; ++i)
+    {
+      CrossProduct cross = new CrossProduct();
+      cross.setSecondChild(Table.loadTable(tableNames.get(i)).toRelation());
+      lowerNode.setChild(cross);
+      lowerNode = cross;
+    }
+    Table table = Table.loadTable(tableNames.get(tableNames.size() - 1));
+    lowerNode.setChild(table.toRelation());
+
+    return projection;
+  }
+
+  public static ITreeNode createSelection(List<String> columnNames, List<String> tableNames)
+  {
+    return createSelection(columnNames, tableNames, null);
+  }
   private String name;
 
   private String alias;
@@ -94,6 +93,7 @@ public class Relation implements ITreeNode
     this.rows = rows;
   }
 
+  @Override
   public Relation evaluate()
   {
     return this;

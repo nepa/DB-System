@@ -14,11 +14,11 @@ import de.uniluebeck.ifis.anf.dbsystem.algebra.SimpleSQLToRelAlgVisitor;
  */
 public class Application
 {
-  // TODO: "SELECT * FROM table" ermoeglichen
   // TODO: Drop-Flag beim Loeschen von Tabellen pruefen
   // TODO: TODOs in Table-Klasse pruefen (cross, projectTo usw.)
-  // TODO: Unit test fuer DROP TABLE schreiben
-  
+  // TODO: Kreuzprodukt und Join testen!
+  // TODO: Kostenberechnung pruefen, spez. fuer Join
+
   /**
    * Application program to run DB-System application.
    *
@@ -26,9 +26,16 @@ public class Application
    */
   public static void main(String[] args)
   {
-    // TODO: Add tests here?
-    Application.createKundenDB();
-    Application.executeQuery("select ID, Vorname from Kunde where ID = \"Kunde1\" or Vorname = \"KVorname2\"");
+    try
+    {
+      // TODO: Add tests here?
+      Application.createKundenDB();
+      Application.executeQuery("select ID, Vorname from Kunde where ID = \"Kunde1\" or Vorname = \"KVorname2\"");
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -38,14 +45,19 @@ public class Application
    * 
    * @return Resulting table object
    */
-  public static Table executeQuery(final String query)
+  public static Table executeQuery(final String query) throws Exception
   {
     // Translate SimpleSQL query to execution plan
     ITreeNode executionPlan = Application.sqlToRelationenAlgebra(query);
 
     // Execute execution plan
     Relation result = Application.executePlan(executionPlan);
-    Application.printTable(result.toTable()); // TODO: Remove after debugging
+
+    // Do some debug output
+    System.out.println("=================================================================\n");
+    System.out.println("Query: " + query);
+    System.out.println("Costs: " + executionPlan.getCosts());
+    Application.printTable(result.toTable());
 
     return result.toTable();
   }
@@ -88,7 +100,7 @@ public class Application
    *
    * @return Resulting Relation object
    */
-  private static Relation executePlan(final ITreeNode executionPlan)
+  private static Relation executePlan(final ITreeNode executionPlan) throws Exception
   {
     return executionPlan.evaluate();
   }
@@ -104,7 +116,7 @@ public class Application
   /**
    * Private helper method to initially create and fill KundenDB.
    */
-  public static void createKundenDB()
+  public static void createKundenDB() throws Exception
   {
     Application.executeQuery("create table Buch (ID varchar , Titel varchar);");
     Application.executeQuery("create table Kunde (ID varchar, Name varchar, Vorname varchar, Adresse varchar);");

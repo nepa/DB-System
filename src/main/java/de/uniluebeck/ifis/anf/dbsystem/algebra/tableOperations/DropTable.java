@@ -9,25 +9,18 @@ import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table;
 public class DropTable extends TableOperation
 {
   @Override
-  public Table execute()
+  public Table execute() throws Exception
   {
     Table table = Table.loadTable(this.name);
     table.setDrop(true);
-
-    try
-    {
-      table.write();
-    }
-    catch (Exception e)
-    {
-      e.printStackTrace();
-    }
+    
+    table.write();
 
     return table;
   }  
   
   @Override
-  public Relation evaluate()
+  public Relation evaluate() throws Exception
   {
     return this.execute().toRelation();
   }

@@ -7,7 +7,6 @@ import java.io.File;
 
 import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.*;
 import de.uniluebeck.ifis.anf.dbsystem.algebra.tableOperations.*;
-import java.io.FileNotFoundException;
 
 /**
  * Unit test for DB-System application.
@@ -46,7 +45,7 @@ public class ApplicationTest
    * Test table operations.
    */
   @Test(timeout = 1000)
-  public void testTableOperations()
+  public void testTableOperations() throws Exception
   {
     String tableName = "Person";
     
@@ -132,7 +131,7 @@ public class ApplicationTest
    * Test execution of SQL queries.
    */
   @Test(timeout = 10000)
-  public void testSQLQueries()
+  public void testSQLQueries() throws Exception
   {
     Application.createKundenDB();
 
@@ -140,49 +139,61 @@ public class ApplicationTest
     Table table = Application.executeQuery("select Titel from Buch where ID = \"Buch2\"");
     assertTrue("Selection must return one result.", table.getRows().size() == 1);
     assertTrue("Result must contain desired author name.", table.getRow(0)[0].equals("Kennedys Hirn"));
-    this.printTable(table);
+    
+    // Test SELECT statement without where clause
+    table = Application.executeQuery("select ID, Titel from Buch");
+    assertTrue("Selection must return one result.", table.getRows().size() == 10);
     
     // Test INSERT statement
     table = Application.executeQuery("insert into Buch(ID, Titel) values (\"MeinBuch\", \"Titel von meinem Buch\")");
     table = Application.executeQuery("select ID, Titel from Buch where ID = \"MeinBuch\"");
     assertTrue("Selection must return one result.", table.getRows().size() == 1);
     assertTrue("Result must contain desired book title.", table.getRow(0)[1].equals("Titel von meinem Buch"));
-    this.printTable(table);
 
     // Test UPDATE statement
     table = Application.executeQuery("update Kunde set Vorname = \"Max\", Name = \"Mustermann\" where ID = \"Kunde1\"");
     table = Application.executeQuery("select Name from Kunde where ID = \"Kunde1\"");
     assertTrue("Selection must return one result.", table.getRows().size() == 1);
     assertTrue("Result must contain desired customer name.", table.getRow(0)[0].equals("Mustermann"));
-    this.printTable(table);
+
+    table = Application.executeQuery("update Kunde set Vorname = \"Jan\", Name = \"Mustermann\" where ID = \"Kunde2\"");
+    table = Application.executeQuery("select Name, Vorname from Kunde where ID = \"Kunde1\" or ID = \"Kunde2\"");
+    assertTrue("Selection must return one result.", table.getRows().size() == 2);
+    assertTrue("Result must contain desired customer name.", table.getRow(0)[1].equals("Max"));
+    assertTrue("Result must contain desired customer name.", table.getRow(1)[1].equals("Jan"));
+
+    table = Application.executeQuery("update Kunde set Name = \"Huber\" where Name = \"Mustermann\"");
+    table = Application.executeQuery("select Name from Kunde where Name = \"Mustermann\"");
+    assertTrue("Selection must return one result.", table.getRows().isEmpty());
+    table = Application.executeQuery("select Name, Vorname from Kunde where Name = \"Huber\"");
+    assertTrue("Selection must return one result.", table.getRows().size() == 2);
+    assertTrue("Result must contain desired customer name.", table.getRow(0)[1].equals("Max"));
+    assertTrue("Result must contain desired customer name.", table.getRow(1)[1].equals("Jan"));
 
     // Test DELETE statement
-    table = Application.executeQuery("delete from Kunde where Name = \"Mustermann\"");
-    table = Application.executeQuery("select Name from Kunde where ID = \"Kunde1\"");
+    table = Application.executeQuery("delete from Kunde where Name = \"Huber\"");
+    table = Application.executeQuery("select Name from Kunde where Name = \"Huber\"");
     assertTrue("Selection must not return any result.", table.getRows().isEmpty());
-    this.printTable(table);
 
     // Test CREATE TABLE statement
     table = Application.executeQuery("create table TemporaryTable(ID varchar, column1 varchar, column2 varchar)");
     table = Application.executeQuery("insert into TemporaryTable(ID, column1, column2) values(\"1\", \"Foo\", \"Bar\")");
     table = Application.executeQuery("select ID, column1, column2 from TemporaryTable where ID = \"1\"");
     assertTrue("Selection must return one result.", table.getRows().size() == 1);
-    this.printTable(table);
 
-    // TODO: Test DROP TABLE statement
+    // Test DROP TABLE statement
     table = Application.executeQuery("drop TemporaryTable");
-    boolean tableWasDropped = true;
-//    boolean tableWasDropped = false;
-//    try
-//    {
-//      table = Application.executeQuery("drop TemporaryTable");
-//    }
-//    catch (FileNotFoundException e)
-//    {
-//      tableWasDropped = true;
-//    }
+    boolean tableWasDropped = false;
+    try
+    {
+      table = Application.executeQuery("drop TemporaryTable");
+    }
+    // Should throw exception, because table does not exist anymore
+    catch (NullPointerException e)
+    {
+      tableWasDropped = true;
+    }
     assertTrue("Table must have been dropped.", tableWasDropped);
-    this.printTable(table);
   }
 
   /**
