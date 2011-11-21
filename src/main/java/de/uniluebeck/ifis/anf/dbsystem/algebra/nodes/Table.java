@@ -16,8 +16,8 @@ import java.io.ObjectOutputStream;
 public class Table implements Serializable
 {
   /** Absolute path to folder, where tables are stored in file system (with trailing slash!) */
-  public static final String DATABASE_PATH = System.getProperty("user.home") + "/anfrage/repo/database/";
-//  public static final String DATABASE_PATH = System.getProperty("user.home") + "/NetBeansProjects/DB-System/database/";
+//  public static final String DATABASE_PATH = System.getProperty("user.home") + "/anfrage/repo/database/";
+  public static final String DATABASE_PATH = System.getProperty("user.home") + "/NetBeansProjects/DB-System/database/";
 
   /** File extension for database tables in file system (with leading dot!) */
   public static final String DATABASE_TABLE_FILE_EXTENSION = ".dbt";
@@ -185,30 +185,6 @@ public class Table implements Serializable
   public void deleteRow(int index)
   {
     this.rows.remove(index);
-  }
-
-  public Table projectTo(String[] columnNames)
-  {
-    // TODO
-    return null;
-  }
-
-  public Table select(AndExpression selectExpression)
-  {
-    // TODO
-    return null;
-  }
-
-  public Table join(Table joinPartner, AndExpression joinExpression)
-  {
-    // TODO
-    return null;
-  }
-
-  public Table cross(Table crossPartner)
-  {
-    // TODO
-    return null;
   }
 
   public Relation toRelation()

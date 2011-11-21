@@ -18,13 +18,9 @@ import de.uniluebeck.ifis.anf.dbsystem.algebra.SimpleSQLToRelAlgVisitor;
  */
 public class Application
 {
-  /** Path to SimpleSQL queries (with trailing slash!) */
-  public static final String QUERY_PATH = System.getProperty("user.home") +
-          "/anfrage/repo/src/test/resources/";
-
-  // TODO: TODOs in Table-Klasse pruefen (cross, projectTo usw.)
-  // TODO: Kreuzprodukt und Join testen!
-  // TODO: Kostenberechnung pruefen, spez. fuer Join
+  /** Path to SimpleSQL queries (with trailing slash!) */  
+//  public static final String QUERY_PATH = System.getProperty("user.home") + "/anfrage/repo/src/test/resources/";
+  public static final String QUERY_PATH = System.getProperty("user.home") + "/NetBeansProjects/DB-Systemr/src/test/resources/";
 
   /**
    * Application program to run DB-System application.
