@@ -40,9 +40,12 @@ public class Relation extends ITreeNode
   {
     return createSelection(columnNames, tableNames, null);
   }
+  
   private String name;
 
   private String alias;
+  
+  private boolean drop;
 
   private String[] columnNames;
 
@@ -83,6 +86,16 @@ public class Relation extends ITreeNode
     this.name = name;
   }
 
+  public boolean isDropped()
+  {
+    return drop;
+  }
+
+  public void setDrop(boolean drop)
+  {
+    this.drop = drop;
+  }
+
   public ArrayList<Row> getRows()
   {
     return rows;
@@ -102,6 +115,7 @@ public class Relation extends ITreeNode
   public Table toTable()
   {
     Table table = new Table(this.getName(), this.getAlias(), this.getColumnNames());
+    table.setDrop(this.drop);
 
     for (Row row: this.getRows())
     {

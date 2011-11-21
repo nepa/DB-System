@@ -25,6 +25,7 @@ public class Selection extends OneChildNode
     Relation result = new Relation();
     result.setName(relation.getName());
     result.setAlias(relation.getAlias());
+    result.setDrop(relation.isDropped());
     result.setColumnNames(relation.getColumnNames());
 
     for (Row row: relation.getRows())

@@ -24,6 +24,7 @@ public class Projection extends OneChildNode
     Relation result = new Relation();
     result.setAlias(relation.getAlias());
     result.setName(relation.getName());
+    result.setDrop(false);
     result.setColumnNames(this.columnNames);
     
     for (Row row: relation.getRows())

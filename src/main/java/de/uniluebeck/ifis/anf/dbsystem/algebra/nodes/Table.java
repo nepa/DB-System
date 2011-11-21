@@ -138,7 +138,7 @@ public class Table implements Serializable
     {
       throw new FileNotFoundException(String.format("Database folder '%s' does not exist. " +
               "Please create it and try again.", Table.DATABASE_PATH));
-    }
+    }    
     
     // Delete table from database, if drop-flag is set
     if (this.drop)
@@ -169,7 +169,7 @@ public class Table implements Serializable
       {
         e.printStackTrace();
       }
-    }
+    }    
   }
 
   public String[] getRow(int index)
@@ -217,6 +217,7 @@ public class Table implements Serializable
 
     relation.setName(this.name);
     relation.setAlias(this.alias);
+    relation.setDrop(this.drop);
     relation.setColumnNames(this.columnNames);
 
     for (String[] tableRow: rows)

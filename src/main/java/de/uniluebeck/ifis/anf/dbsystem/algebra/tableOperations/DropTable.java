@@ -10,12 +10,12 @@ public class DropTable extends TableOperation
 {
   @Override
   public Table execute() throws Exception
-  {
+  {    
     Table table = Table.loadTable(this.name);
     table.setDrop(true);
     
     table.write();
-
+    
     return table;
   }  
   

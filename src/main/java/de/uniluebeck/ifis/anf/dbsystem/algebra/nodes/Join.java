@@ -24,6 +24,7 @@ public class Join extends CrossProduct
     
     Relation rel = super.evaluate();
     Relation result = new Relation();
+    result.setDrop(false);
     for (Row row: rel.getRows())
     {
       if (expression.evaluate(row))
