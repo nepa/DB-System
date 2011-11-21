@@ -24,18 +24,26 @@ public class Projection extends OneChildNode
     Relation result = new Relation();
     result.setAlias(relation.getAlias());
     result.setName(relation.getName());
-    result.setColumnNames(this.columnNames);
+    String[] columnNames = new String[this.columnNames.length];
+    for (int i = 0; i < columnNames.length; ++i){
+    	if (this.columnNames[i].contains(".")){
+    		columnNames[i] = this.columnNames[i];
+    	} else {
+    		columnNames[i] = result.getAlias() + "." + this.columnNames[i];
+    	}
+    }
+    result.setColumnNames(columnNames);
     
     for (Row row: relation.getRows())
     {
       Row newRow = new Row();
       newRow.name = row.name;
       newRow.alias = row.alias;
-      newRow.tupleNames = this.columnNames;
+      newRow.columnNames = result.getColumnNames();
       newRow.tuple = new String[this.columnNames.length];
       for (int i = 0; i < this.columnNames.length; ++i){
-        for (int j = 0; j < row.tupleNames.length; ++j){
-          if (newRow.tupleNames[i].equals(row.tupleNames[j])){
+        for (int j = 0; j < row.columnNames.length; ++j){
+          if (newRow.columnNames[i].equals(row.columnNames[j])){
             newRow.tuple[i] = row.tuple[j];
           }
         }

@@ -16,8 +16,8 @@ import java.io.ObjectOutputStream;
 public class Table implements Serializable
 {
   /** Absolute path to folder, where tables are stored in file system (with trailing slash!) */
-//  public static final String DATABASE_PATH = System.getProperty("user.home") + "/anfrage/repo/database/";
-  public static final String DATABASE_PATH = System.getProperty("user.home") + "/NetBeansProjects/DB-System/database/";
+  public static final String DATABASE_PATH = System.getProperty("user.home") + "/anfrage/repo/database/";
+//  public static final String DATABASE_PATH = System.getProperty("user.home") + "/NetBeansProjects/DB-System/database/";
 
   /** File extension for database tables in file system (with leading dot!) */
   public static final String DATABASE_TABLE_FILE_EXTENSION = ".dbt";
@@ -217,14 +217,18 @@ public class Table implements Serializable
 
     relation.setName(this.name);
     relation.setAlias(this.alias);
-    relation.setColumnNames(this.columnNames);
+    String[] columnNames = this.columnNames;
+    for (int i = 0; i < columnNames.length; ++i){
+    	columnNames[i] = this.alias + "." + columnNames[i];
+    }
+    relation.setColumnNames(columnNames);
 
     for (String[] tableRow: rows)
     {
       Row row = new Row();
-      row.name = this.name;
-      row.alias = this.alias;
-      row.tupleNames = this.columnNames;
+      row.name = relation.getName();
+      row.alias = relation.getAlias();
+      row.columnNames = relation.getColumnNames();
       row.tuple = tableRow;
 
       relation.getRows().add(row);
@@ -255,7 +259,8 @@ public class Table implements Serializable
 
       for (int i = 0; i < this.columnNames.length; ++i)
       {
-        columnName = (this.columnNames[i].length() > n ? this.columnNames[i].substring(0, n - 3) + "..." : this.columnNames[i]);
+    	columnName = (this.columnNames[i].contains(".") ? this.columnNames[i].split("\\.")[1] : this.columnNames[i]);
+        columnName = (columnName.length() > n ? columnName.substring(0, n - 3) + "..." : columnName);
         tableHeader += String.format("%-" + n + "s |", columnName);
 
         if (i < this.columnNames.length - 1)

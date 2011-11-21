@@ -32,16 +32,16 @@ public class CrossProduct extends TwoChildNode
         newRow.name = row1.name + "x" + row2.name;
         newRow.alias = row1.alias + "x" + row2.alias;
         newRow.tuple = new String[row1.tuple.length + row2.tuple.length];
-        newRow.tupleNames = new String[row1.tupleNames.length + row2.tupleNames.length];
-        for (int i = 0; i < row1.tupleNames.length; ++i)
+        newRow.columnNames = new String[row1.columnNames.length + row2.columnNames.length];
+        for (int i = 0; i < row1.columnNames.length; ++i)
         {
           newRow.tuple[i] = row1.tuple[i];
-          newRow.tupleNames[i] = row1.tupleNames[i];
+          newRow.columnNames[i] = row1.columnNames[i];
         }
-        for (int i = 0; i < row2.tupleNames.length; ++i)
+        for (int i = 0; i < row2.columnNames.length; ++i)
         {
-          newRow.tuple[i + row1.tupleNames.length] = row2.tuple[i];
-          newRow.tupleNames[i + row1.tupleNames.length] = row2.tupleNames[i];
+          newRow.tuple[i + row1.columnNames.length] = row2.tuple[i];
+          newRow.columnNames[i + row1.columnNames.length] = row2.columnNames[i];
         }
         result.getRows().add(newRow);
       }

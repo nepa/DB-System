@@ -64,17 +64,18 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
   public Object visit(Query n, Object argu)
   {
     List<String> selectItems = (List<String>)n.f1.accept(this, argu);
-    List<String> tableNames = (List<String>)n.f3.accept(this, argu);
+    List<String[]> tableNames = (List<String[]>)n.f3.accept(this, argu);
 
     de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.AndExpression whereClause = null;
     if (n.f4.present())
     {
 
       List<String> columnNames = new ArrayList<String>();
-      for (String tableName: tableNames)
+      for (String[] tableName: tableNames)
       {
-        de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table table = de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table.loadTable(tableName);
-        for (String columnName: table.getColumnNames())
+        de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table table = de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table.loadTable(tableName[0]);
+        table.setAlias(tableName[1]);
+        for (String columnName: table.toRelation().getColumnNames())
         {
           columnNames.add(columnName);
         }
@@ -124,12 +125,12 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
    */
   public Object visit(Tables n, Object argu)
   {
-    List<String> tableList = new ArrayList<String>();
-    tableList.add((String)n.f0.accept(this, argu));
+    List<String[]> tableList = new ArrayList<String[]>();
+    tableList.add((String[])n.f0.accept(this, argu));
     for (Object sequenceObj: n.f1.nodes)
     {
       NodeSequence sequence = (NodeSequence)sequenceObj;
-      tableList.add((String)sequence.elementAt(1).accept(this, argu));
+      tableList.add((String[])sequence.elementAt(1).accept(this, argu));
     }
     return tableList;
   }
@@ -140,7 +141,16 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
    */
   public Object visit(Table n, Object argu)
   {
-    return n.f0.f0.tokenImage;
+	String[] data = new String[2];
+	data[0] = n.f0.f0.tokenImage;
+	if (n.f1.present()){
+		NodeSequence sequence = (NodeSequence) n.f1.node;
+		Name name = (Name) sequence.elementAt(1);
+		data[1] = name.f0.tokenImage;
+	} else {
+		data[1] = data[0];
+	}
+    return data;
   }
 
   /**
@@ -319,7 +329,7 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
             de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table.loadTable(tablename);
 
     // Set column names
-    for (String columnName: table.getColumnNames())
+    for (String columnName: table.toRelation().getColumnNames())
     {
       columnList.add(columnName);
     }
@@ -406,7 +416,7 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
 
     de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table table = de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table.loadTable(tablename);
 
-    for (String columnName: table.getColumnNames())
+    for (String columnName: table.toRelation().getColumnNames())
     {
       columnList.add(columnName);
     }

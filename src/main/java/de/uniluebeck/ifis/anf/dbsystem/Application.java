@@ -20,7 +20,7 @@ public class Application
 {
   /** Path to SimpleSQL queries (with trailing slash!) */
   public static final String QUERY_PATH = System.getProperty("user.home") +
-          "/NetBeansProjects/DB-System/src/test/resources/";
+          "/anfrage/repo/src/test/resources/";
 
   // TODO: Drop-Flag beim Loeschen von Tabellen pruefen
   // TODO: TODOs in Table-Klasse pruefen (cross, projectTo usw.)

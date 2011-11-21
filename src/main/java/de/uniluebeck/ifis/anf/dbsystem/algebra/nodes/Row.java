@@ -11,7 +11,7 @@ public class Row
   
   protected String[] tuple;
   
-  protected String[] tupleNames;
+  protected String[] columnNames;
 
   public String getAlias()
   {
@@ -45,11 +45,26 @@ public class Row
 
   public String[] getTupleNames()
   {
-    return tupleNames;
+    return columnNames;
   }
 
   public void setTupleNames(String[] tupleNames)
   {
-    this.tupleNames = tupleNames;
+    this.columnNames = tupleNames;
+  }
+  
+  /**
+   * check if the column with the given index has the given name, take into account
+   * that a . can be in name but doesn't need to be
+   * @param index
+   * @param name
+   * @return
+   */
+  public boolean columnNameEquals(int index, String name){
+	  if (name.contains(".")){
+		  return columnNames[index].equals(name);
+	  } else {
+		  return this.columnNames[index].split("\\.")[1].equals(name);
+	  }
   }
 }

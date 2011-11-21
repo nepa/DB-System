@@ -46,17 +46,15 @@ public class PrimaryExpression implements IExpression
     if (isIsConstant()){
       return value;
     }
-    //String alias = value.split(".")[0];
-    String tupleName = value;
     
       
-      for (int i = 0; i < relation.tupleNames.length; ++i)
+    for (int i = 0; i < relation.columnNames.length; ++i)
+    {
+      if (relation.columnNameEquals(i, value))
       {
-        if (relation.tupleNames[i].equals(tupleName))
-        {
-          return relation.getTuple()[i];
-        }        
+        return relation.getTuple()[i];
       }
+    }
     
     return null;
   }

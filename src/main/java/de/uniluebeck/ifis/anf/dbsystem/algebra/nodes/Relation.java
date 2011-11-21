@@ -8,7 +8,8 @@ import java.util.List;
  */
 public class Relation extends ITreeNode
 {
-  public static ITreeNode createSelection(List<String> columnNames, List<String> tableNames, AndExpression whereClause)
+	
+  public static ITreeNode createSelection(List<String> columnNames, List<String[]> tableNames, AndExpression whereClause)
   {
     Projection projection = new Projection();
     projection.setColumnNames(columnNames.toArray(new String[0]));
@@ -26,17 +27,24 @@ public class Relation extends ITreeNode
     for (int i = 0; i < tableNames.size() - 1; ++i)
     {
       CrossProduct cross = new CrossProduct();
-      cross.setSecondChild(Table.loadTable(tableNames.get(i)).toRelation());
+      Table table = Table.loadTable(tableNames.get(i)[0]);
+      table.setAlias(tableNames.get(i)[1]);
+      cross.setSecondChild(table.toRelation());
       lowerNode.setChild(cross);
       lowerNode = cross;
     }
-    Table table = Table.loadTable(tableNames.get(tableNames.size() - 1));
+    System.out.println("Name = " + tableNames.get(0)[0]);
+    System.out.println("Alias = " + tableNames.get(0)[1]);
+    
+    
+    Table table = Table.loadTable(tableNames.get(tableNames.size() - 1)[0]);
+    table.setAlias(tableNames.get(tableNames.size() - 1)[1]);
     lowerNode.setChild(table.toRelation());
 
     return projection;
   }
 
-  public static ITreeNode createSelection(List<String> columnNames, List<String> tableNames)
+  public static ITreeNode createSelection(List<String> columnNames, List<String[]> tableNames)
   {
     return createSelection(columnNames, tableNames, null);
   }
@@ -109,5 +117,20 @@ public class Relation extends ITreeNode
     }
 
     return table;
+  }
+  
+  /**
+   * check if the column with the given index has the given name, take into account
+   * that a . can be in name but doesn't need to be
+   * @param index
+   * @param name
+   * @return
+   */
+  public boolean columnNameEquals(int index, String name){
+	  if (name.contains(".")){
+		  return columnNames[index].equals(name);
+	  } else {
+		  return this.columnNames[index].split("\\.")[1].equals(name);
+	  }
   }
 }
