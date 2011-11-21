@@ -61,6 +61,6 @@ public class Projection extends OneChildNode
   @Override
   public int getCosts() throws Exception
   {
-    return this.evaluate().getRows().size() * this.columnNames.length;
+    return this.getChild().evaluate().getRows().size() * this.columnNames.length;
   }
 }
