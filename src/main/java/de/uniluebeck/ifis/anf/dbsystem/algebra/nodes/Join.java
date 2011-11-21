@@ -24,6 +24,7 @@ public class Join extends CrossProduct
     
     Relation rel = super.evaluate();
     Relation result = new Relation();
+    result.setDrop(false);
     for (Row row: rel.getRows())
     {
       if (expression.evaluate(row))
@@ -47,11 +48,13 @@ public class Join extends CrossProduct
   @Override
   public int getCosts() throws Exception
   {
+	int oldCost = getChild().getCosts() + getSecondChild().getCosts();
+	  
     Relation rel1 = getChild().evaluate();
     Relation rel2 = getSecondChild().evaluate();
 
     // TODO: How do we get Rows_s(T1/T2)?
-    return this.evaluate().getRows().size() +
+    return oldCost + this.evaluate().getRows().size() +
             (rel1.getColumnNames().length + rel2.getColumnNames().length);
   }
 }

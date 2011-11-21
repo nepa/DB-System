@@ -14,6 +14,7 @@ public class CrossProduct extends TwoChildNode
 
     result.setName(rel1.getName() + "x" + rel2.getName());
     result.setAlias(rel1.getAlias() + "x" + rel2.getAlias());
+    result.setDrop(false);
     result.setColumnNames(new String[rel1.getColumnNames().length + rel2.getColumnNames().length]);
     for (int i = 0; i < rel1.getColumnNames().length; ++i)
     {
@@ -62,10 +63,12 @@ public class CrossProduct extends TwoChildNode
   @Override
   public int getCosts() throws Exception
   {
+	int oldCost = getChild().getCosts() + getSecondChild().getCosts();
+	  
     Relation rel1 = getChild().evaluate();
     Relation rel2 = getSecondChild().evaluate();
 
-    return rel1.getRows().size() * rel2.getRows().size()
+    return oldCost + rel1.getRows().size() * rel2.getRows().size()
             * (rel1.getColumnNames().length + rel2.getColumnNames().length);
   }
 }

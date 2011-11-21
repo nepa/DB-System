@@ -32,10 +32,7 @@ public class Relation extends ITreeNode
       cross.setSecondChild(table.toRelation());
       lowerNode.setChild(cross);
       lowerNode = cross;
-    }
-    System.out.println("Name = " + tableNames.get(0)[0]);
-    System.out.println("Alias = " + tableNames.get(0)[1]);
-    
+    }    
     
     Table table = Table.loadTable(tableNames.get(tableNames.size() - 1)[0]);
     table.setAlias(tableNames.get(tableNames.size() - 1)[1]);
@@ -48,9 +45,12 @@ public class Relation extends ITreeNode
   {
     return createSelection(columnNames, tableNames, null);
   }
+  
   private String name;
 
   private String alias;
+  
+  private boolean drop;
 
   private String[] columnNames;
 
@@ -91,6 +91,16 @@ public class Relation extends ITreeNode
     this.name = name;
   }
 
+  public boolean isDropped()
+  {
+    return drop;
+  }
+
+  public void setDrop(boolean drop)
+  {
+    this.drop = drop;
+  }
+
   public ArrayList<Row> getRows()
   {
     return rows;
@@ -110,6 +120,7 @@ public class Relation extends ITreeNode
   public Table toTable()
   {
     Table table = new Table(this.getName(), this.getAlias(), this.getColumnNames());
+    table.setDrop(this.drop);
 
     for (Row row: this.getRows())
     {

@@ -24,6 +24,7 @@ public class Projection extends OneChildNode
     Relation result = new Relation();
     result.setAlias(relation.getAlias());
     result.setName(relation.getName());
+    result.setDrop(false);
     String[] columnNames = new String[this.columnNames.length];
     for (int i = 0; i < columnNames.length; ++i){
     	if (this.columnNames[i].contains(".")){
@@ -68,6 +69,7 @@ public class Projection extends OneChildNode
   @Override
   public int getCosts() throws Exception
   {
-    return this.evaluate().getRows().size() * this.columnNames.length;
+	int oldCost = getChild().getCosts();
+    return oldCost + this.getChild().evaluate().getRows().size() * this.columnNames.length;
   }
 }

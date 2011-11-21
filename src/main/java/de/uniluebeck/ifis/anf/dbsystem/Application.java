@@ -22,7 +22,6 @@ public class Application
   public static final String QUERY_PATH = System.getProperty("user.home") +
           "/anfrage/repo/src/test/resources/";
 
-  // TODO: Drop-Flag beim Loeschen von Tabellen pruefen
   // TODO: TODOs in Table-Klasse pruefen (cross, projectTo usw.)
   // TODO: Kreuzprodukt und Join testen!
   // TODO: Kostenberechnung pruefen, spez. fuer Join

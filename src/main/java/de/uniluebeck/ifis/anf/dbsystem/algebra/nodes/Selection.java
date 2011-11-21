@@ -25,6 +25,7 @@ public class Selection extends OneChildNode
     Relation result = new Relation();
     result.setName(relation.getName());
     result.setAlias(relation.getAlias());
+    result.setDrop(relation.isDropped());
     result.setColumnNames(relation.getColumnNames());
 
     for (Row row: relation.getRows())
@@ -50,6 +51,7 @@ public class Selection extends OneChildNode
   @Override
   public int getCosts() throws Exception
   {
-    return this.evaluate().getRows().size() * this.getChild().evaluate().getColumnNames().length;
+	int oldCost = getChild().getCosts();
+    return oldCost + this.getChild().evaluate().getRows().size() * this.getChild().evaluate().getColumnNames().length;
   }
 }
