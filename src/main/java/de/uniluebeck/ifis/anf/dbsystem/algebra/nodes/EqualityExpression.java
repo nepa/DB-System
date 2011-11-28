@@ -6,9 +6,9 @@ package de.uniluebeck.ifis.anf.dbsystem.algebra.nodes;
 public class EqualityExpression implements IBooleanExpression
 {
   protected PrimaryExpression firstExpression;
-  
+
   protected PrimaryExpression secondExpression;
-  
+
   protected String operator;
 
   public PrimaryExpression getFirstExpression()
@@ -28,9 +28,9 @@ public class EqualityExpression implements IBooleanExpression
 
   public void setOperator(String operator)
   {
-    if (operator.equals("=") || operator.equals("!=") ||
-        operator.equals(">") || operator.equals("<") ||
-        operator.equals("<=") || operator.equals(">="))
+    if (operator.equals("=") || operator.equals("!=")
+            || operator.equals(">") || operator.equals("<")
+            || operator.equals("<=") || operator.equals(">="))
     {
       this.operator = operator;
     }
@@ -54,6 +54,7 @@ public class EqualityExpression implements IBooleanExpression
   {
     String value1 = (String)firstExpression.evaluate(relation);
     String value2 = (String)secondExpression.evaluate(relation);
+
     return evaluateOperator(value1, value2);
   }
 
@@ -61,24 +62,40 @@ public class EqualityExpression implements IBooleanExpression
   {
     String value1 = (String)firstExpression.evaluate(firstRelation, secondRelation);
     String value2 = (String)secondExpression.evaluate(firstRelation, secondRelation);
+
     return evaluateOperator(value1, value2);
   }
-  
-  private boolean evaluateOperator(String value1, String value2){
+
+  private boolean evaluateOperator(String value1, String value2)
+  {
     int result = value1.compareTo(value2);
-    if (this.operator.equals("=")){
+
+    if (this.operator.equals("="))
+    {
       return result == 0;
-    } else if (this.operator.equals("!=")){
+    }
+    else if (this.operator.equals("!="))
+    {
       return result != 0;
-    } else if (this.operator.equals(">")){
+    }
+    else if (this.operator.equals(">"))
+    {
       return result > 0;
-    } else if (this.operator.equals("<")){
+    }
+    else if (this.operator.equals("<"))
+    {
       return result < 0;
-    } else if (this.operator.equals("<=")){
+    }
+    else if (this.operator.equals("<="))
+    {
       return result <= 0;
-    } else if (this.operator.equals(">=")){
+    }
+    else if (this.operator.equals(">="))
+    {
       return result >= 0;
-    } else {
+    }
+    else
+    {
       return false;
     }
   }

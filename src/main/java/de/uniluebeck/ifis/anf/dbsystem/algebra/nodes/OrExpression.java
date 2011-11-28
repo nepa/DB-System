@@ -9,22 +9,22 @@ import java.util.ArrayList;
 public class OrExpression implements IBooleanExpression
 {
   protected List<EqualityExpression> expressions;
-  
+
   public OrExpression()
   {
     expressions = new ArrayList<EqualityExpression>();
   }
-  
+
   public OrExpression(final List<EqualityExpression> expressions)
   {
     this.setExpressions(expressions);
   }
-  
+
   public OrExpression(final EqualityExpression expression)
   {
     List<EqualityExpression> list = new ArrayList<EqualityExpression>();
     list.add(expression);
-    
+
     this.setExpressions(list);
   }
 
@@ -40,8 +40,10 @@ public class OrExpression implements IBooleanExpression
 
   public Boolean evaluate(Row relation)
   {
-    for (EqualityExpression expr : expressions){
-      if (expr.evaluate(relation)){
+    for (EqualityExpression expr: expressions)
+    {
+      if (expr.evaluate(relation))
+      {
         return true;
       }
     }
@@ -50,8 +52,10 @@ public class OrExpression implements IBooleanExpression
 
   public Boolean evaluate(Row firstRelation, Row secondRelation)
   {
-    for (EqualityExpression expr : expressions){
-      if (expr.evaluate(firstRelation, secondRelation)){
+    for (EqualityExpression expr: expressions)
+    {
+      if (expr.evaluate(firstRelation, secondRelation))
+      {
         return true;
       }
     }

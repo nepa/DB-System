@@ -51,7 +51,8 @@ public class Selection extends OneChildNode
   @Override
   public int getCosts() throws Exception
   {
-	int oldCost = getChild().getCosts();
+    int oldCost = getChild().getCosts();
+    
     return oldCost + this.getChild().evaluate().getRows().size() * this.getChild().evaluate().getColumnNames().length;
   }
 }
