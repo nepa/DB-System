@@ -103,15 +103,18 @@ public class EqualityExpression implements IBooleanExpression
     }
   }
 
-@Override
-public List<String> getAttributes() {
-	List<String> result = new ArrayList<String>();
-	if (!firstExpression.isIsConstant()){
-		result.add(firstExpression.getValue());
-	}
-	if (!secondExpression.isIsConstant()){
-		result.add(secondExpression.getValue());
-	}
-	return null;
-}
+  @Override
+  public List<String> getAttributes()
+  {
+    List<String> result = new ArrayList<String>();
+    if (!firstExpression.isIsConstant())
+    {
+      result.add(firstExpression.getValue());
+    }
+    if (!secondExpression.isIsConstant())
+    {
+      result.add(secondExpression.getValue());
+    }
+    return null;
+  }
 }
