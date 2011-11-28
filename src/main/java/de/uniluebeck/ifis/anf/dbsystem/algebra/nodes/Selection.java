@@ -7,6 +7,14 @@ public class Selection extends OneChildNode
 {
   protected AndExpression expression;
 
+  public Selection(){
+	  
+  }
+  
+  public Selection(AndExpression expression){
+	  this.expression = expression;
+  }
+  
   public AndExpression getExpression()
   {
     return expression;

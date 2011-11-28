@@ -9,5 +9,5 @@ import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.ITreeNode;
  */
 public interface IOptimization
 {
-  public void optimize(ITreeNode executionPlan);
+  public ITreeNode optimize(ITreeNode executionPlan) throws Exception;
 }

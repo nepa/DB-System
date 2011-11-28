@@ -1,5 +1,8 @@
 package de.uniluebeck.ifis.anf.dbsystem.algebra.nodes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author seidel
  */
@@ -82,4 +85,16 @@ public class EqualityExpression implements IBooleanExpression
       return false;
     }
   }
+
+@Override
+public List<String> getAttributes() {
+	List<String> result = new ArrayList<String>();
+	if (!firstExpression.isIsConstant()){
+		result.add(firstExpression.getValue());
+	}
+	if (!secondExpression.isIsConstant()){
+		result.add(secondExpression.getValue());
+	}
+	return null;
+}
 }

@@ -7,6 +7,7 @@ import java.io.File;
 
 import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.*;
 import de.uniluebeck.ifis.anf.dbsystem.algebra.tableOperations.*;
+import de.uniluebeck.ifis.anf.dbsystem.optimierung.CascadeSelects;
 
 /**
  * Unit test for DB-System application.
@@ -142,7 +143,7 @@ public class ApplicationTest
     
     // Test SELECT statement without where clause
     table = Application.executeQuery("select ID, Titel from Buch");
-    assertTrue("Selection must return one result.", table.getRows().size() == 10);
+    assertTrue("Selection must return ten results.", table.getRows().size() == 10);
     
     // Test INSERT statement
     table = Application.executeQuery("insert into Buch(ID, Titel) values (\"MeinBuch\", \"Titel von meinem Buch\")");
@@ -194,6 +195,68 @@ public class ApplicationTest
       tableWasDropped = true;
     }
     assertTrue("Table must have been dropped.", tableWasDropped);
+  }
+  
+  @Test(timeout = 10000)
+  public void testOptimizedQuery() throws Exception{
+	 ITreeNode executionPlan = createRelAlgTree();
+	 ITreeNode optimizedPlan = new CascadeSelects().optimize(createRelAlgTree());
+	 
+	 assertEquals(executionPlan.evaluate().toTable().toString(), optimizedPlan.evaluate().toTable().toString());
+	 
+	 
+	 Selection selection = (Selection) optimizedPlan;
+	 assertTrue(selection.getChild().getClass() == Selection.class);
+	 
+	 System.out.println("Costs normal: " + executionPlan.getCosts());
+	 System.out.println("Costs optimized: " + optimizedPlan.getCosts());
+  }
+  
+  /**
+   * private helper method to create a relational algebra tree
+   */
+  private ITreeNode createRelAlgTree() throws Exception{
+	    EqualityExpression equalityExpression = new EqualityExpression();
+	    equalityExpression.setFirstExpression(new PrimaryExpression("Vanessa", true));
+	    equalityExpression.setSecondExpression(new PrimaryExpression("Firstname", false));
+	    equalityExpression.setOperator("=");
+	    
+	    AndExpression andExpression = new AndExpression(equalityExpression);
+	    
+	    equalityExpression = new EqualityExpression();
+	    equalityExpression.setFirstExpression(new PrimaryExpression("Meier", true));
+	    equalityExpression.setSecondExpression(new PrimaryExpression("Lastname", false));
+	    equalityExpression.setOperator("=");
+	    
+	    OrExpression orExpression = new OrExpression(equalityExpression);
+	    
+	    andExpression.getExpressions().add(orExpression);
+	    
+	    Selection selection = new Selection(andExpression);
+	    
+
+	    CreateTable createTableOperation = new CreateTable();
+	    createTableOperation.setName("Persons");
+	    createTableOperation.setColumnNames(new String[] { "Firstname", "Lastname", "Age" });
+	    Table table = createTableOperation.execute();
+	    
+	    Insert insertOperation = new Insert();
+	    insertOperation.setName("Persons");
+	    insertOperation.setColumnNames(new String[] { "Firstname", "Lastname", "Age" });
+	    insertOperation.setValues(new String[] { "Max", "Mustermann", "42" });
+	    table = insertOperation.execute();
+	    
+	    insertOperation = new Insert();
+	    insertOperation.setName("Persons");
+	    insertOperation.setColumnNames(new String[] { "Firstname", "Lastname", "Age" });
+	    insertOperation.setValues(new String[] { "Vanessa", "Meier", "21" });
+	    table = insertOperation.execute();
+	    
+	    Relation relation = table.toRelation();
+	    
+	    selection.setChild(relation);
+	    
+	    return selection;
   }
 
   /**

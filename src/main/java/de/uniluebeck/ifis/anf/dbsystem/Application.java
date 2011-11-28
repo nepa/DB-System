@@ -19,8 +19,8 @@ import de.uniluebeck.ifis.anf.dbsystem.algebra.SimpleSQLToRelAlgVisitor;
 public class Application
 {
   /** Path to SimpleSQL queries (with trailing slash!) */  
-//  public static final String QUERY_PATH = System.getProperty("user.home") + "/anfrage/repo/src/test/resources/";
-  public static final String QUERY_PATH = System.getProperty("user.home") + "/NetBeansProjects/DB-Systemr/src/test/resources/";
+  public static final String QUERY_PATH = System.getProperty("user.home") + "/anfrage/repo/src/test/resources/";
+//  public static final String QUERY_PATH = System.getProperty("user.home") + "/NetBeansProjects/DB-Systemr/src/test/resources/";
 
   /**
    * Application program to run DB-System application.
