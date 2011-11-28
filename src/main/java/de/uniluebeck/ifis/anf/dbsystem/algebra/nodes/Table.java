@@ -90,7 +90,7 @@ public class Table implements Serializable
   {
     this.rows = rows;
   }
-  
+
   /**
    * Load Table object from file.
    * 
@@ -107,8 +107,8 @@ public class Table implements Serializable
     try
     {
       // Load input stream from file
-      fileInputStream = new FileInputStream(Table.DATABASE_PATH +
-              System.getProperty("file.separator") + tableName + Table.DATABASE_TABLE_FILE_EXTENSION);
+      fileInputStream = new FileInputStream(Table.DATABASE_PATH
+              + System.getProperty("file.separator") + tableName + Table.DATABASE_TABLE_FILE_EXTENSION);
       objectInputStream = new ObjectInputStream(fileInputStream);
 
       // Deserialize object from stream
@@ -133,13 +133,13 @@ public class Table implements Serializable
   public void write() throws Exception
   {
     String pathToFile = Table.DATABASE_PATH + System.getProperty("file.separator") + this.getName() + Table.DATABASE_TABLE_FILE_EXTENSION;
-    
+
     if (!(new File(Table.DATABASE_PATH)).exists())
     {
-      throw new FileNotFoundException(String.format("Database folder '%s' does not exist. " +
-              "Please create it and try again.", Table.DATABASE_PATH));
-    }    
-    
+      throw new FileNotFoundException(String.format("Database folder '%s' does not exist. "
+              + "Please create it and try again.", Table.DATABASE_PATH));
+    }
+
     // Delete table from database, if drop-flag is set
     if (this.drop)
     {
@@ -157,8 +157,8 @@ public class Table implements Serializable
       try
       {
         // Open stream for object write-out
-        fileOutputStream = new FileOutputStream(Table.DATABASE_PATH +
-                System.getProperty("file.separator") + this.getName() + Table.DATABASE_TABLE_FILE_EXTENSION);
+        fileOutputStream = new FileOutputStream(Table.DATABASE_PATH
+                + System.getProperty("file.separator") + this.getName() + Table.DATABASE_TABLE_FILE_EXTENSION);
         objectOutputStream = new ObjectOutputStream(fileOutputStream);
 
         // Serialize object to stream
@@ -169,7 +169,7 @@ public class Table implements Serializable
       {
         e.printStackTrace();
       }
-    }    
+    }
   }
 
   public String[] getRow(int index)
@@ -195,8 +195,12 @@ public class Table implements Serializable
     relation.setAlias(this.alias);
     relation.setDrop(this.drop);
     String[] columnNames = this.columnNames;
-    for (int i = 0; i < columnNames.length; ++i){
-    	columnNames[i] = this.alias + "." + columnNames[i];
+    for (int i = 0; i < columnNames.length; ++i)
+    {
+      if (!columnNames[i].contains("."))
+      {
+        columnNames[i] = this.alias + "." + columnNames[i];
+      }
     }
     relation.setColumnNames(columnNames);
 
@@ -224,7 +228,7 @@ public class Table implements Serializable
   {
     String result = String.format("Table: '%s' alias '%s' [drop = %b]\n\n%s\n%s\n%s",
             this.name, this.alias, this.drop, "-----------------", "| <Empty table> |", "-----------------");
-    
+
     if (null != this.columnNames)
     {
       // Amount of characters that are shown from content
@@ -236,7 +240,7 @@ public class Table implements Serializable
 
       for (int i = 0; i < this.columnNames.length; ++i)
       {
-    	columnName = (this.columnNames[i].contains(".") ? this.columnNames[i].split("\\.")[1] : this.columnNames[i]);
+        columnName = (this.columnNames[i].contains(".") ? this.columnNames[i].split("\\.")[1] : this.columnNames[i]);
         columnName = (columnName.length() > n ? columnName.substring(0, n - 3) + "..." : columnName);
         tableHeader += String.format("%-" + n + "s |", columnName);
 
@@ -272,11 +276,11 @@ public class Table implements Serializable
         }
         tableContent += "\n";
       }
-      
+
       result = String.format("Table: '%s' alias '%s' [drop = %b]\n\n%s\n%s\n%s\n%s%s",
               this.name, this.alias, this.drop, line, tableHeader, line, tableContent, line);
     }
-    
+
     return result;
   }
 }

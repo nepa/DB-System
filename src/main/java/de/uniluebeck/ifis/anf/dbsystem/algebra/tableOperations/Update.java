@@ -49,7 +49,10 @@ public class Update extends Delete
       {
         for (int j = 0; j < this.columnNames.length; ++j)
         {
-          if (row.getTupleNames()[i].equals(this.columnNames[j]))
+          // Remove alias from column name, if any is set
+          String columnName = (row.getTupleNames()[i].contains(".") ? row.getTupleNames()[i].split("\\.")[1] : row.getTupleNames()[i]);
+          
+          if (columnName.equals(this.columnNames[j]))
           {
             row.getTuple()[i] = this.values[j];
           }

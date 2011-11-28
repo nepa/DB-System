@@ -8,7 +8,6 @@ import java.util.List;
  */
 public class Relation extends ITreeNode
 {
-	
   public static ITreeNode createSelection(List<String> columnNames, List<String[]> tableNames, AndExpression whereClause)
   {
     Projection projection = new Projection();
@@ -32,8 +31,8 @@ public class Relation extends ITreeNode
       cross.setSecondChild(table.toRelation());
       lowerNode.setChild(cross);
       lowerNode = cross;
-    }    
-    
+    }
+
     Table table = Table.loadTable(tableNames.get(tableNames.size() - 1)[0]);
     table.setAlias(tableNames.get(tableNames.size() - 1)[1]);
     lowerNode.setChild(table.toRelation());
@@ -45,11 +44,10 @@ public class Relation extends ITreeNode
   {
     return createSelection(columnNames, tableNames, null);
   }
-  
   private String name;
 
   private String alias;
-  
+
   private boolean drop;
 
   private String[] columnNames;
@@ -129,7 +127,7 @@ public class Relation extends ITreeNode
 
     return table;
   }
-  
+
   /**
    * check if the column with the given index has the given name, take into account
    * that a . can be in name but doesn't need to be
@@ -137,11 +135,15 @@ public class Relation extends ITreeNode
    * @param name
    * @return
    */
-  public boolean columnNameEquals(int index, String name){
-	  if (name.contains(".")){
-		  return columnNames[index].equals(name);
-	  } else {
-		  return this.columnNames[index].split("\\.")[1].equals(name);
-	  }
+  public boolean columnNameEquals(int index, String name)
+  {
+    if (name.contains("."))
+    {
+      return columnNames[index].equals(name);
+    }
+    else
+    {
+      return this.columnNames[index].split("\\.")[1].equals(name);
+    }
   }
 }

@@ -26,15 +26,19 @@ public class Projection extends OneChildNode
     result.setName(relation.getName());
     result.setDrop(false);
     String[] columnNames = new String[this.columnNames.length];
-    for (int i = 0; i < columnNames.length; ++i){
-    	if (this.columnNames[i].contains(".")){
-    		columnNames[i] = this.columnNames[i];
-    	} else {
-    		columnNames[i] = result.getAlias() + "." + this.columnNames[i];
-    	}
+    for (int i = 0; i < columnNames.length; ++i)
+    {
+      if (this.columnNames[i].contains("."))
+      {
+        columnNames[i] = this.columnNames[i];
+      }
+      else
+      {
+        columnNames[i] = result.getAlias() + "." + this.columnNames[i];
+      }
     }
     result.setColumnNames(columnNames);
-    
+
     for (Row row: relation.getRows())
     {
       Row newRow = new Row();
@@ -42,16 +46,19 @@ public class Projection extends OneChildNode
       newRow.alias = row.alias;
       newRow.columnNames = result.getColumnNames();
       newRow.tuple = new String[this.columnNames.length];
-      for (int i = 0; i < this.columnNames.length; ++i){
-        for (int j = 0; j < row.columnNames.length; ++j){
-          if (newRow.columnNames[i].equals(row.columnNames[j])){
+      for (int i = 0; i < this.columnNames.length; ++i)
+      {
+        for (int j = 0; j < row.columnNames.length; ++j)
+        {
+          if (newRow.columnNames[i].equals(row.columnNames[j]))
+          {
             newRow.tuple[i] = row.tuple[j];
           }
         }
       }
       result.getRows().add(newRow);
     }
-    
+
     return result;
   }
 
@@ -69,7 +76,7 @@ public class Projection extends OneChildNode
   @Override
   public int getCosts() throws Exception
   {
-	int oldCost = getChild().getCosts();
+    int oldCost = getChild().getCosts();
     return oldCost + this.getChild().evaluate().getRows().size() * this.columnNames.length;
   }
 }

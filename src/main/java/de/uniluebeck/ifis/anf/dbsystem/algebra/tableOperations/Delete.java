@@ -46,6 +46,7 @@ public class Delete extends TableOperation
       Selection selection = new Selection();
       selection.setChild(relation);
       selection.setExpression(whereClause);
+      
       return selection.evaluate().getRows();
     }
     else
