@@ -15,6 +15,7 @@ public abstract class TwoChildNode extends OneChildNode
   public void setSecondChild(ITreeNode secondChildNode)
   {
     this.secondChild = secondChildNode;
+    secondChildNode.setParent(this);
   }
   
   @Override
