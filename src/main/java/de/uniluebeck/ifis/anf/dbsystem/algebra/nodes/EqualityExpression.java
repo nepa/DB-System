@@ -58,6 +58,9 @@ public class EqualityExpression implements IBooleanExpression
     String value1 = (String)firstExpression.evaluate(relation);
     String value2 = (String)secondExpression.evaluate(relation);
 
+    // TODO: Is expression true?
+    System.out.println("Is (" + value1 + " " + operator + " " + value2 + ") true?");
+
     return evaluateOperator(value1, value2);
   }
 

@@ -6,11 +6,11 @@ package de.uniluebeck.ifis.anf.dbsystem.algebra.nodes;
 public class Row
 {
   protected String name;
-  
+
   protected String alias;
-  
+
   protected String[] tuple;
-  
+
   protected String[] columnNames;
 
   public String getAlias()
@@ -52,7 +52,7 @@ public class Row
   {
     this.columnNames = tupleNames;
   }
-  
+
   /**
    * check if the column with the given index has the given name, take into account
    * that a . can be in name but doesn't need to be
@@ -60,11 +60,15 @@ public class Row
    * @param name
    * @return
    */
-  public boolean columnNameEquals(int index, String name){
-	  if (name.contains(".")){
-		  return columnNames[index].equals(name);
-	  } else {
-		  return this.columnNames[index].split("\\.")[1].equals(name);
-	  }
+  public boolean columnNameEquals(int index, String name)
+  {
+    if (name.contains("."))
+    {
+      return columnNames[index].equals(name);
+    }
+    else
+    {
+      return this.columnNames[index].split("\\.")[1].equals(name);
+    }
   }
 }

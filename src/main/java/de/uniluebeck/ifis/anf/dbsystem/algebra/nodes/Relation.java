@@ -44,6 +44,7 @@ public class Relation extends ITreeNode
   {
     return createSelection(columnNames, tableNames, null);
   }
+  
   private String name;
 
   private String alias;

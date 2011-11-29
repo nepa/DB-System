@@ -60,7 +60,7 @@ public class AndExpression implements IBooleanExpression {
 	@Override
 	public List<String> getAttributes() {
 		List<String> result = new ArrayList<String>();
-		for (OrExpression expr : expressions) {
+		for (OrExpression expr: expressions) {
 			result.addAll(expr.getAttributes());
 		}
 		return result;

@@ -8,7 +8,7 @@ public class Selection extends OneChildNode
   protected AndExpression expression;
 
   public Selection(){
-	  
+    this.expression = null;
   }
   
   public Selection(AndExpression expression){
@@ -38,7 +38,7 @@ public class Selection extends OneChildNode
 
     for (Row row: relation.getRows())
     {
-      if (this.expression.evaluate(row))
+      if (this.expression.evaluate(row)) // TODO: Is this correct?
       {
         result.getRows().add(row);
       }

@@ -69,12 +69,12 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
     de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.AndExpression whereClause = null;
     if (n.f4.present())
     {
-
       List<String> columnNames = new ArrayList<String>();
       for (String[] tableName: tableNames)
       {
         de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table table = de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.Table.loadTable(tableName[0]);
         table.setAlias(tableName[1]);
+
         for (String columnName: table.toRelation().getColumnNames())
         {
           columnNames.add(columnName);

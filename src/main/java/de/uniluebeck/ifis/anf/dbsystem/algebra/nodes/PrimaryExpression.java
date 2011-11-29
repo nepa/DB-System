@@ -45,8 +45,7 @@ public class PrimaryExpression implements IExpression
   {
     if (isIsConstant()){
       return value;
-    }
-    
+    }    
       
     for (int i = 0; i < relation.columnNames.length; ++i)
     {
@@ -64,6 +63,6 @@ public class PrimaryExpression implements IExpression
     String firstResults = (String)this.evaluate(firstRelation);
     String secondResults = (String)this.evaluate(secondRelation);
     
-    return (firstResults != null) ? firstResults : secondResults;
+    return ((firstResults != null) ? firstResults : secondResults);
   }
 }
