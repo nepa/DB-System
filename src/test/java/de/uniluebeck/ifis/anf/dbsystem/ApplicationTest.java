@@ -8,6 +8,7 @@ import java.io.File;
 import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.*;
 import de.uniluebeck.ifis.anf.dbsystem.algebra.tableOperations.*;
 import de.uniluebeck.ifis.anf.dbsystem.optimierung.CascadeSelects;
+import de.uniluebeck.ifis.anf.dbsystem.optimierung.DetectJoins;
 import de.uniluebeck.ifis.anf.dbsystem.optimierung.MoveSelection;
 
 /**
@@ -227,12 +228,21 @@ public class ApplicationTest
     
     assertEquals(executionPlan.evaluate().toTable().toString(), optimizedMoveSelectionPlan.evaluate().toTable().toString());
     
-    assertTrue(optimizedMoveSelectionPlan.getClass() == CrossProduct.class);
+    assertTrue(optimizedMoveSelectionPlan.getCosts() < optimizedCascadePlan.getCosts());
+    
+    ITreeNode optimizedJoinPlan = new DetectJoins().optimize(new MoveSelection().optimize(new CascadeSelects().optimize(createRelAlgTree())));
+    
+
+    assertTrue(optimizedJoinPlan.getClass() == Join.class);
+    
+    assertEquals(executionPlan.evaluate().toTable().toString(), optimizedJoinPlan.evaluate().toTable().toString());
+    assertTrue(optimizedJoinPlan.getCosts() < optimizedMoveSelectionPlan.getCosts());
     
     this.printCaption("Optimization Costs");
-    System.out.println("Costs normal:         " + executionPlan.getCosts());
-    System.out.println("Costs cascade:        " + optimizedCascadePlan.getCosts());
-    System.out.println("Costs cascade + move: " + optimizedMoveSelectionPlan.getCosts());
+    System.out.println("Costs normal:  " + executionPlan.getCosts());
+    System.out.println("Costs cascade: " + optimizedCascadePlan.getCosts());
+    System.out.println("Costs + move:  " + optimizedMoveSelectionPlan.getCosts());
+    System.out.println("Costs + join:  " + optimizedJoinPlan.getCosts());
     
     
   }
@@ -294,7 +304,7 @@ public class ApplicationTest
   private ITreeNode createRelAlgTree() throws Exception
   {
     EqualityExpression equalityExpression = new EqualityExpression();
-    equalityExpression.setFirstExpression(new PrimaryExpression("Meier", true));
+    equalityExpression.setFirstExpression(new PrimaryExpression("Hobbies.Lastname", false));
     equalityExpression.setSecondExpression(new PrimaryExpression("Persons.Lastname", false));
     equalityExpression.setOperator("=");
     
