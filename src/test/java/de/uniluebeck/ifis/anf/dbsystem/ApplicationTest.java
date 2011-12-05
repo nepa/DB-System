@@ -215,6 +215,7 @@ public class ApplicationTest
   {
     this.printCaption("Testing query optimizations...");
 
+    // Test cascaded selects
     ITreeNode executionPlan = createRelAlgTree();
     ITreeNode optimizedCascadePlan = new CascadeSelects().optimize(createRelAlgTree());
     assertEquals(executionPlan.evaluate().toTable().toString(), optimizedCascadePlan.evaluate().toTable().toString());
@@ -224,17 +225,16 @@ public class ApplicationTest
     Selection selection = (Selection)optimizedCascadePlan;
     assertTrue(selection.getChild().getClass() == Selection.class);
     
+    // Test moved selections
     ITreeNode optimizedMoveSelectionPlan = new MoveSelection().optimize(new CascadeSelects().optimize(createRelAlgTree()));
     
     assertEquals(executionPlan.evaluate().toTable().toString(), optimizedMoveSelectionPlan.evaluate().toTable().toString());
-    
     assertTrue(optimizedMoveSelectionPlan.getCosts() < optimizedCascadePlan.getCosts());
     
+    // Test replacement with join operation
     ITreeNode optimizedJoinPlan = new DetectJoins().optimize(new MoveSelection().optimize(new CascadeSelects().optimize(createRelAlgTree())));
     
-
     assertTrue(optimizedJoinPlan.getClass() == Join.class);
-    
     assertEquals(executionPlan.evaluate().toTable().toString(), optimizedJoinPlan.evaluate().toTable().toString());
     assertTrue(optimizedJoinPlan.getCosts() < optimizedMoveSelectionPlan.getCosts());
     
@@ -243,8 +243,6 @@ public class ApplicationTest
     System.out.println("Costs cascade: " + optimizedCascadePlan.getCosts());
     System.out.println("Costs + move:  " + optimizedMoveSelectionPlan.getCosts());
     System.out.println("Costs + join:  " + optimizedJoinPlan.getCosts());
-    
-    
   }
 
   /**
