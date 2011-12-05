@@ -35,7 +35,7 @@ public class Application
       Application.createKundenDB();
       
       // Execute some queries on KundenDB
-      Application.executeQuery("select Titel from Buch where ID = \"Buch2\"");
+      Application.executeQueriesFromFile(QUERY_PATH + "sql.txt");
     }
     catch (Exception e)
     {
