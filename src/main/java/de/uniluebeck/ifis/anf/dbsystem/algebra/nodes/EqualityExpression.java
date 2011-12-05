@@ -118,6 +118,6 @@ public class EqualityExpression implements IBooleanExpression
     {
       result.add(secondExpression.getValue());
     }
-    return null;
+    return result;
   }
 }
