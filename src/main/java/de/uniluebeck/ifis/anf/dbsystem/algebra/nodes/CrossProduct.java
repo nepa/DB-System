@@ -47,7 +47,7 @@ public class CrossProduct extends TwoChildNode
         result.getRows().add(newRow);
       }
     }
-
+    
     return result;
   }
   

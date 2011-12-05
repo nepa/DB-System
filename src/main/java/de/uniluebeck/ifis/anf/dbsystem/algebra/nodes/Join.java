@@ -17,24 +17,23 @@ public class Join extends CrossProduct
     this.expression = expression;
   }
 
-  @Override
-  public Relation evaluate() throws Exception
-  {
-    // TODO: Is this complete yet?
-    
-    Relation rel = super.evaluate();
-    Relation result = new Relation();
-    result.setDrop(false);
-    for (Row row: rel.getRows())
-    {
-      if (expression.evaluate(row))
-      {
-        result.getRows().add(row);
-      }
-    }
+	@Override
+	public Relation evaluate() throws Exception {
+		// TODO: Is this complete yet?
 
-    return result;
-  }
+		Relation crossRelation = super.evaluate();
+		Relation result = new Relation();
+		result.setColumnNames(crossRelation.getColumnNames());
+		result.setName(crossRelation.getName());
+		result.setAlias(crossRelation.getAlias());
+		result.setDrop(false);
+		for (Row row : crossRelation.getRows()) {
+			if (expression.evaluate(row)) {
+				result.getRows().add(row);
+			}
+		}
+		return result;
+	}
 
   /**
    * Calculate costs for join:
