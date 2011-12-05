@@ -314,13 +314,10 @@ public class ApplicationTest
     equalityExpression.setOperator("=");
 
     OrExpression orExpression = new OrExpression(equalityExpression);
-
     andExpression.getExpressions().add(orExpression);
-
     Selection selection = new Selection(andExpression);
 
-    CrossProduct cross = new CrossProduct();
-    
+    CrossProduct cross = new CrossProduct();    
     selection.setChild(cross);
     
     CreateTable createTableOperation = new CreateTable();
@@ -339,9 +336,8 @@ public class ApplicationTest
     insertOperation.setColumnNames(new String[] { "Firstname", "Lastname", "Age" });
     insertOperation.setValues(new String[] { "Vanessa", "Meier", "21" });
     table1 = insertOperation.execute();
-
-    cross.setChild(table1.toRelation());
     
+    cross.setChild(table1.toRelation());
 
     createTableOperation = new CreateTable();
     createTableOperation.setName("Hobbies");
@@ -350,16 +346,16 @@ public class ApplicationTest
 
     insertOperation = new Insert();
     insertOperation.setName("Hobbies");
-    insertOperation.setColumnNames(new String[] { "Lastname", "Hobby"});
-    insertOperation.setValues(new String[] { "Meier", "Fishing"});
+    insertOperation.setColumnNames(new String[] { "Lastname", "Hobby" });
+    insertOperation.setValues(new String[] { "Meier", "Fishing" });
     table2 = insertOperation.execute();
 
     insertOperation = new Insert();
     insertOperation.setName("Hobbies");
-    insertOperation.setColumnNames(new String[] {"Lastname", "Hobby" });
+    insertOperation.setColumnNames(new String[] { "Lastname", "Hobby" });
     insertOperation.setValues(new String[] { "Mustermann", "Golf" });
     table2 = insertOperation.execute();
-
+    
     cross.setSecondChild(table2.toRelation());
 
     return selection;
