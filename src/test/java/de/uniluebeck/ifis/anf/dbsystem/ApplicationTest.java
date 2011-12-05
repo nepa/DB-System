@@ -8,6 +8,7 @@ import java.io.File;
 import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.*;
 import de.uniluebeck.ifis.anf.dbsystem.algebra.tableOperations.*;
 import de.uniluebeck.ifis.anf.dbsystem.optimierung.CascadeSelects;
+import de.uniluebeck.ifis.anf.dbsystem.optimierung.MoveSelection;
 
 /**
  * Unit test for DB-System application.
@@ -49,7 +50,7 @@ public class ApplicationTest
   /**
    * Test table operations.
    */
-  @Test(timeout = 1000)
+  @Test(timeout = 10000)
   public void testTableOperations() throws Exception
   {
     this.printCaption("Test table operations...");
@@ -137,7 +138,7 @@ public class ApplicationTest
   /**
    * Test execution of SQL queries.
    */
-  @Test(timeout = 10000)
+  @Test(timeout = 50000)
   public void testSQLQueries() throws Exception
   {
     this.printCaption("Testing SimpleSQL queries...");
@@ -214,17 +215,26 @@ public class ApplicationTest
     this.printCaption("Testing query optimizations...");
 
     ITreeNode executionPlan = createRelAlgTree();
-    ITreeNode optimizedPlan = new CascadeSelects().optimize(createRelAlgTree());
-    assertEquals(executionPlan.evaluate().toTable().toString(), optimizedPlan.evaluate().toTable().toString());
+    ITreeNode optimizedCascadePlan = new CascadeSelects().optimize(createRelAlgTree());
+    assertEquals(executionPlan.evaluate().toTable().toString(), optimizedCascadePlan.evaluate().toTable().toString());
 
-    this.printTable(executionPlan.evaluate().toTable());
-    this.printTable(optimizedPlan.evaluate().toTable());
+    this.printTable(optimizedCascadePlan.evaluate().toTable());
 
-    Selection selection = (Selection)optimizedPlan;
+    Selection selection = (Selection)optimizedCascadePlan;
     assertTrue(selection.getChild().getClass() == Selection.class);
-
-    System.out.println("Costs normal: " + executionPlan.getCosts());
-    System.out.println("Costs optimized: " + optimizedPlan.getCosts());
+    
+    ITreeNode optimizedMoveSelectionPlan = new MoveSelection().optimize(new CascadeSelects().optimize(createRelAlgTree()));
+    
+    assertEquals(executionPlan.evaluate().toTable().toString(), optimizedMoveSelectionPlan.evaluate().toTable().toString());
+    
+    assertTrue(optimizedMoveSelectionPlan.getClass() == CrossProduct.class);
+    
+    this.printCaption("Optimization Costs");
+    System.out.println("Costs normal:         " + executionPlan.getCosts());
+    System.out.println("Costs cascade:        " + optimizedCascadePlan.getCosts());
+    System.out.println("Costs cascade + move: " + optimizedMoveSelectionPlan.getCosts());
+    
+    
   }
 
   /**
@@ -284,15 +294,15 @@ public class ApplicationTest
   private ITreeNode createRelAlgTree() throws Exception
   {
     EqualityExpression equalityExpression = new EqualityExpression();
+    equalityExpression.setFirstExpression(new PrimaryExpression("Meier", true));
+    equalityExpression.setSecondExpression(new PrimaryExpression("Persons.Lastname", false));
+    equalityExpression.setOperator("=");
+    
+    AndExpression andExpression = new AndExpression(equalityExpression);
+    
+    equalityExpression = new EqualityExpression();
     equalityExpression.setFirstExpression(new PrimaryExpression("Vanessa", true));
     equalityExpression.setSecondExpression(new PrimaryExpression("Firstname", false));
-    equalityExpression.setOperator("=");
-
-    AndExpression andExpression = new AndExpression(equalityExpression);
-
-    equalityExpression = new EqualityExpression();
-    equalityExpression.setFirstExpression(new PrimaryExpression("Meier", true));
-    equalityExpression.setSecondExpression(new PrimaryExpression("Lastname", false));
     equalityExpression.setOperator("=");
 
     OrExpression orExpression = new OrExpression(equalityExpression);
@@ -301,24 +311,48 @@ public class ApplicationTest
 
     Selection selection = new Selection(andExpression);
 
+    CrossProduct cross = new CrossProduct();
+    
+    selection.setChild(cross);
+    
     CreateTable createTableOperation = new CreateTable();
     createTableOperation.setName("Persons");
     createTableOperation.setColumnNames(new String[] { "Firstname", "Lastname", "Age" });
-    Table table = createTableOperation.execute();
+    Table table1 = createTableOperation.execute();
 
     Insert insertOperation = new Insert();
     insertOperation.setName("Persons");
     insertOperation.setColumnNames(new String[] { "Firstname", "Lastname", "Age" });
     insertOperation.setValues(new String[] { "Max", "Mustermann", "42" });
-    table = insertOperation.execute();
+    table1 = insertOperation.execute();
 
     insertOperation = new Insert();
     insertOperation.setName("Persons");
     insertOperation.setColumnNames(new String[] { "Firstname", "Lastname", "Age" });
     insertOperation.setValues(new String[] { "Vanessa", "Meier", "21" });
-    table = insertOperation.execute();
+    table1 = insertOperation.execute();
 
-    selection.setChild(table.toRelation());
+    cross.setChild(table1.toRelation());
+    
+
+    createTableOperation = new CreateTable();
+    createTableOperation.setName("Hobbies");
+    createTableOperation.setColumnNames(new String[] { "Lastname", "Hobby" });
+    Table table2 = createTableOperation.execute();
+
+    insertOperation = new Insert();
+    insertOperation.setName("Hobbies");
+    insertOperation.setColumnNames(new String[] { "Lastname", "Hobby"});
+    insertOperation.setValues(new String[] { "Meier", "Fishing"});
+    table2 = insertOperation.execute();
+
+    insertOperation = new Insert();
+    insertOperation.setName("Hobbies");
+    insertOperation.setColumnNames(new String[] {"Lastname", "Hobby" });
+    insertOperation.setValues(new String[] { "Mustermann", "Golf" });
+    table2 = insertOperation.execute();
+
+    cross.setSecondChild(table2.toRelation());
 
     return selection;
   }

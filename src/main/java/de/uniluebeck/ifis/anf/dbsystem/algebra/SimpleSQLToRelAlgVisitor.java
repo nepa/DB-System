@@ -272,6 +272,7 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
 
     List<String> tableColumns = (List<String>)argu;
     String name = "";
+    boolean constant = true;
     switch (n.f0.which)
     {
       case 0:
@@ -289,8 +290,17 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
         break;
     }
 
+    if (name.contains("\\.")){
+    	constant = !tableColumns.contains(name);
+    } else {
+    	for (String column : tableColumns){
+    		if (column.split("\\.")[1].equals(name)){
+    			constant = false;
+    		}
+    	}
+    }
     expr.setValue(this.removeQuotes(name));
-    expr.setIsConstant(!tableColumns.contains(name));
+    expr.setIsConstant(constant);
 
     return expr;
   }
