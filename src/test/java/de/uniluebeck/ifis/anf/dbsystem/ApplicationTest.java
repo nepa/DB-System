@@ -50,7 +50,6 @@ public class ApplicationTest
   /**
    * Test table operations.
    */
-  @Ignore
   @Test(timeout = 1000)
   public void testTableOperations() throws Exception
   {
@@ -210,7 +209,6 @@ public class ApplicationTest
   /**
    * Test various query optimizations.
    */
-  @Ignore
   @Test(timeout = 10000)
   public void testOptimizedQuery() throws Exception
   {
