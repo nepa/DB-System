@@ -39,7 +39,6 @@ public class Projection extends OneChildNode
     }
     result.setColumnNames(columnNames);
 
-    // TODO: getRows() is empty here!
     for (Row row: relation.getRows())
     {
       Row newRow = new Row();

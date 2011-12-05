@@ -19,8 +19,7 @@ public class CascadeSelects implements IOptimization {
 			Selection selection = (Selection) executionPlan;
 			OneChildNode parent = selection.getParent();
 			ITreeNode child = selection.getChild();
-			for (OrExpression orExpression : selection.getExpression()
-					.getExpressions()) {			
+			for (OrExpression orExpression : selection.getExpression().getExpressions()) {			
 				Selection newSelection = new Selection(new AndExpression(orExpression));
 				if (first) {
 					executionPlan = newSelection;
@@ -41,7 +40,7 @@ public class CascadeSelects implements IOptimization {
 			}
 		}
 		
-		//Recursion
+		// Recursion
 		if (executionPlan.getClass() == OneChildNode.class){
 			OneChildNode oneChild = (OneChildNode) executionPlan;
 			oneChild.setChild(optimize(oneChild.getChild()));

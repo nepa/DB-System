@@ -38,7 +38,7 @@ public class Selection extends OneChildNode
 
     for (Row row: relation.getRows())
     {
-      if (this.expression.evaluate(row)) // TODO: Is this correct?
+      if (this.expression.evaluate(row))
       {
         result.getRows().add(row);
       }

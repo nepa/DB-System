@@ -1,6 +1,5 @@
 package de.uniluebeck.ifis.anf.dbsystem;
 
-import org.junit.Ignore; // TODO: Remove ignores, when bug with WHERE in SELECT is fixed
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -50,7 +49,6 @@ public class ApplicationTest
   /**
    * Test table operations.
    */
-  @Ignore
   @Test(timeout = 1000)
   public void testTableOperations() throws Exception
   {
@@ -210,7 +208,6 @@ public class ApplicationTest
   /**
    * Test various query optimizations.
    */
-  @Ignore
   @Test(timeout = 10000)
   public void testOptimizedQuery() throws Exception
   {
