@@ -36,7 +36,6 @@ public class Application
       
       // Execute some queries on KundenDB
       Application.executeQueriesFromFile(QUERY_PATH + "sql.txt");
-      
     }
     catch (Exception e)
     {

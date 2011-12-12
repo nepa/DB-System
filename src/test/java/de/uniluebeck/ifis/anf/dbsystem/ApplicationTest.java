@@ -224,8 +224,8 @@ public class ApplicationTest
 
     this.printTable(optimizedCascadePlan.evaluate().toTable());
 
-    Projection proj = (Projection) optimizedCascadePlan;
-    Selection selection = (Selection)proj.getChild();
+    Projection projection = (Projection) optimizedCascadePlan;
+    Selection selection = (Selection)projection.getChild();
 
     assertTrue(selection.getChild().getClass() == Selection.class);
     
@@ -237,9 +237,9 @@ public class ApplicationTest
     
     // Test replacement with join operation
     ITreeNode optimizedJoinPlan = new DetectJoins().optimize(new MoveSelection().optimize(new CascadeSelects().optimize(createRelAlgTree())));
-    proj = (Projection) optimizedJoinPlan;
+    projection = (Projection) optimizedJoinPlan;
     
-    assertTrue(proj.getChild().getClass() == Join.class);
+    assertTrue(projection.getChild().getClass() == Join.class);
     assertEquals(executionPlan.evaluate().toTable().toString(), optimizedJoinPlan.evaluate().toTable().toString());
     assertTrue(optimizedJoinPlan.getCosts() < optimizedMoveSelectionPlan.getCosts());
     
@@ -248,8 +248,6 @@ public class ApplicationTest
     assertTrue(optimizedMoveProjectionPlan.getClass() == Join.class);
     assertEquals(executionPlan.evaluate().toTable().toString(), optimizedMoveProjectionPlan.evaluate().toTable().toString());
     assertTrue(optimizedMoveProjectionPlan.getCosts() < optimizedJoinPlan.getCosts());
-
-    
     
     this.printCaption("Optimization Costs");
     System.out.println("Costs normal:     " + executionPlan.getCosts());
@@ -258,40 +256,40 @@ public class ApplicationTest
     System.out.println("Costs + join:     " + optimizedJoinPlan.getCosts());
     System.out.println("Costs + moveProj: " + optimizedMoveProjectionPlan.getCosts());
   }
-  
-  @Ignore
-  @Test(timeout = 10000)
-  public void testBlock2() throws Exception{
-	  Application.createKundenDB();
-	  
-	  String query1 = "select B.Titel from Buch as B, Kunde as K, Buch_Bestellung as BB, Kunde_Bestellung as KB where K.Name=\"KName1\" and K.ID=KB.K_ID and KB.B_ID=BB.Be_ID and BB.Bu_ID=B.ID";
-	  String query2 = "select B.ID, K.Name from Bestellung as B, Kunde as K, Kunde_Bestellung as KB where KB.K_ID=K.ID and KB.B_ID=B.ID and B.ID=\"Bestellung5\"";
-	  String query3 = "select Name from Kunde,Kunde_Bestellung where ID=K_ID and Name=\"KName1\"";
-	  String[] queries = new String[]{query1, query2, query3};
-	  
-		for (String query : queries) {
-			
-			System.out.println("Query: " + query);
-			
-			ITreeNode executionPlan = Application
-					.sqlToRelationenAlgebra(query);
-			printTable(executionPlan.evaluate().toTable());
-			System.out.println("Cost normal = " + executionPlan.getCosts());
-			executionPlan = new MoveSelection().optimize(new CascadeSelects()
-					.optimize(executionPlan));
-			System.out.println("Cost inclusive exercise 2 = "
-					+ executionPlan.getCosts());
-			executionPlan = new DetectJoins().optimize(executionPlan);
-			System.out.println("Cost inclusive exercise 3 = "
-					+ executionPlan.getCosts());
-			executionPlan = new MoveProjection().optimize(executionPlan);
-			System.out.println("Cost inclusive exercise 4 = "
-					+ executionPlan.getCosts());
-		}
 
+  /**
+   * Test queries from block 2 assignment.
+   */
+  @Test(timeout = 10000)
+  public void testBlock2() throws Exception
+  {
+    Application.createKundenDB();
+    
+    // Define queries
+    String query1 = "select B.Titel from Buch as B, Kunde as K, Buch_Bestellung as BB, Kunde_Bestellung as KB where K.Name=\"KName1\" and K.ID=KB.K_ID and KB.B_ID=BB.Be_ID and BB.Bu_ID=B.ID";
+    String query2 = "select B.ID, K.Name from Bestellung as B, Kunde as K, Kunde_Bestellung as KB where KB.K_ID=K.ID and KB.B_ID=B.ID and B.ID=\"Bestellung5\"";
+    String query3 = "select Name from Kunde,Kunde_Bestellung where ID=K_ID and Name=\"KName1\"";
+    
+    for (String query: new String[] { query1, query2, query3 })
+    {
+      System.out.println("Query: " + query);
+      
+      ITreeNode executionPlan = Application.sqlToRelationenAlgebra(query);
+      printTable(executionPlan.evaluate().toTable());
+      
+      System.out.println("Costs normal:               " + executionPlan.getCosts());
+      
+      executionPlan = new MoveSelection().optimize(new CascadeSelects().optimize(executionPlan));
+      System.out.println("Costs inclusive exercise 2: " + executionPlan.getCosts());
+      
+      executionPlan = new DetectJoins().optimize(executionPlan);
+      System.out.println("Costs inclusive exercise 3: " + executionPlan.getCosts());
+      
+      executionPlan = new MoveProjection().optimize(executionPlan);
+      System.out.println("Costs inclusive exercise 4: " + executionPlan.getCosts());
+    }
   }
   
-
   /**
    * Private helper method to test serialization of Table objects.
    */
