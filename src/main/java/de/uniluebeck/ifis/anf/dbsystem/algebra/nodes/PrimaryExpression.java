@@ -54,7 +54,6 @@ public class PrimaryExpression implements IExpression
         return relation.getTuple()[i];
       }
     }
-    
     return null;
   }
 

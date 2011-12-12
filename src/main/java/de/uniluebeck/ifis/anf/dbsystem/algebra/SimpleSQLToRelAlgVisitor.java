@@ -290,7 +290,7 @@ public class SimpleSQLToRelAlgVisitor extends ObjectDepthFirst
         break;
     }
 
-    if (name.contains("\\.")){
+    if (name.contains(".")){
     	constant = !tableColumns.contains(name);
     } else {
     	for (String column : tableColumns){

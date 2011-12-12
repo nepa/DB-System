@@ -1,5 +1,6 @@
 package de.uniluebeck.ifis.anf.dbsystem;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -9,6 +10,7 @@ import de.uniluebeck.ifis.anf.dbsystem.algebra.nodes.*;
 import de.uniluebeck.ifis.anf.dbsystem.algebra.tableOperations.*;
 import de.uniluebeck.ifis.anf.dbsystem.optimierung.CascadeSelects;
 import de.uniluebeck.ifis.anf.dbsystem.optimierung.DetectJoins;
+import de.uniluebeck.ifis.anf.dbsystem.optimierung.MoveProjection;
 import de.uniluebeck.ifis.anf.dbsystem.optimierung.MoveSelection;
 
 /**
@@ -222,7 +224,9 @@ public class ApplicationTest
 
     this.printTable(optimizedCascadePlan.evaluate().toTable());
 
-    Selection selection = (Selection)optimizedCascadePlan;
+    Projection proj = (Projection) optimizedCascadePlan;
+    Selection selection = (Selection)proj.getChild();
+
     assertTrue(selection.getChild().getClass() == Selection.class);
     
     // Test moved selections
@@ -233,17 +237,60 @@ public class ApplicationTest
     
     // Test replacement with join operation
     ITreeNode optimizedJoinPlan = new DetectJoins().optimize(new MoveSelection().optimize(new CascadeSelects().optimize(createRelAlgTree())));
+    proj = (Projection) optimizedJoinPlan;
     
-    assertTrue(optimizedJoinPlan.getClass() == Join.class);
+    assertTrue(proj.getChild().getClass() == Join.class);
     assertEquals(executionPlan.evaluate().toTable().toString(), optimizedJoinPlan.evaluate().toTable().toString());
     assertTrue(optimizedJoinPlan.getCosts() < optimizedMoveSelectionPlan.getCosts());
     
+    // Test moved projections
+    ITreeNode optimizedMoveProjectionPlan = new MoveProjection().optimize(new DetectJoins().optimize(new MoveSelection().optimize(new CascadeSelects().optimize(createRelAlgTree()))));
+    assertTrue(optimizedMoveProjectionPlan.getClass() == Join.class);
+    assertEquals(executionPlan.evaluate().toTable().toString(), optimizedMoveProjectionPlan.evaluate().toTable().toString());
+    assertTrue(optimizedMoveProjectionPlan.getCosts() < optimizedJoinPlan.getCosts());
+
+    
+    
     this.printCaption("Optimization Costs");
-    System.out.println("Costs normal:  " + executionPlan.getCosts());
-    System.out.println("Costs cascade: " + optimizedCascadePlan.getCosts());
-    System.out.println("Costs + move:  " + optimizedMoveSelectionPlan.getCosts());
-    System.out.println("Costs + join:  " + optimizedJoinPlan.getCosts());
+    System.out.println("Costs normal:     " + executionPlan.getCosts());
+    System.out.println("Costs cascade:    " + optimizedCascadePlan.getCosts());
+    System.out.println("Costs + moveSel:  " + optimizedMoveSelectionPlan.getCosts());
+    System.out.println("Costs + join:     " + optimizedJoinPlan.getCosts());
+    System.out.println("Costs + moveProj: " + optimizedMoveProjectionPlan.getCosts());
   }
+  
+  @Ignore
+  @Test(timeout = 10000)
+  public void testBlock2() throws Exception{
+	  Application.createKundenDB();
+	  
+	  String query1 = "select B.Titel from Buch as B, Kunde as K, Buch_Bestellung as BB, Kunde_Bestellung as KB where K.Name=\"KName1\" and K.ID=KB.K_ID and KB.B_ID=BB.Be_ID and BB.Bu_ID=B.ID";
+	  String query2 = "select B.ID, K.Name from Bestellung as B, Kunde as K, Kunde_Bestellung as KB where KB.K_ID=K.ID and KB.B_ID=B.ID and B.ID=\"Bestellung5\"";
+	  String query3 = "select Name from Kunde,Kunde_Bestellung where ID=K_ID and Name=\"KName1\"";
+	  String[] queries = new String[]{query1, query2, query3};
+	  
+		for (String query : queries) {
+			
+			System.out.println("Query: " + query);
+			
+			ITreeNode executionPlan = Application
+					.sqlToRelationenAlgebra(query);
+			printTable(executionPlan.evaluate().toTable());
+			System.out.println("Cost normal = " + executionPlan.getCosts());
+			executionPlan = new MoveSelection().optimize(new CascadeSelects()
+					.optimize(executionPlan));
+			System.out.println("Cost inclusive exercise 2 = "
+					+ executionPlan.getCosts());
+			executionPlan = new DetectJoins().optimize(executionPlan);
+			System.out.println("Cost inclusive exercise 3 = "
+					+ executionPlan.getCosts());
+			executionPlan = new MoveProjection().optimize(executionPlan);
+			System.out.println("Cost inclusive exercise 4 = "
+					+ executionPlan.getCosts());
+		}
+
+  }
+  
 
   /**
    * Private helper method to test serialization of Table objects.
@@ -316,6 +363,10 @@ public class ApplicationTest
     OrExpression orExpression = new OrExpression(equalityExpression);
     andExpression.getExpressions().add(orExpression);
     Selection selection = new Selection(andExpression);
+    
+    Projection projection = new Projection();
+    projection.setColumnNames(new String[]{"Hobbies.Lastname", "Persons.Lastname"});
+    projection.setChild(selection);
 
     CrossProduct cross = new CrossProduct();    
     selection.setChild(cross);
@@ -358,7 +409,7 @@ public class ApplicationTest
     
     cross.setSecondChild(table2.toRelation());
 
-    return selection;
+    return projection;
   }
 
   /**

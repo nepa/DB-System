@@ -1,5 +1,9 @@
 package de.uniluebeck.ifis.anf.dbsystem.algebra.nodes;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 /**
  * @author seidel
  */
@@ -20,6 +24,7 @@ public class Projection extends OneChildNode
   @Override
   public Relation evaluate() throws Exception
   {
+	adjustColumnNames();
     Relation relation = this.getChild().evaluate();
     Relation result = new Relation();
     result.setAlias(relation.getAlias());
@@ -34,7 +39,7 @@ public class Projection extends OneChildNode
       }
       else
       {
-        columnNames[i] = result.getAlias() + "." + this.columnNames[i];
+        System.out.println("Projection has no . in column name, this shouldn't be.");
       }
     }
     result.setColumnNames(columnNames);
@@ -59,9 +64,44 @@ public class Projection extends OneChildNode
       result.getRows().add(newRow);
     }
 
-    return result;
+    return removeDoubles(result);
   }
 
+  private void adjustColumnNames() throws Exception{
+	  List<String> newColumnNames = new ArrayList<String>();
+	  List<String> childAttributes = this.getChild().getAttributes();
+	  for (String childAttribute : childAttributes){
+		  for (String columnName : this.getColumnNames()){
+				if (childAttribute.equals(columnName)) {
+					newColumnNames.add(childAttribute);
+				} else if (!columnName.contains(".")
+						&& childAttribute.split("\\.")[1].equals(columnName)) {
+					newColumnNames.add(childAttribute);
+				}
+		  }
+	  }
+	  this.setColumnNames(newColumnNames.toArray(new String[0]));
+  }
+  
+	private Relation removeDoubles(Relation relation) {
+		for (int i = 0; i < relation.getRows().size(); i++) {
+			for (int j = i + 1; j < relation.getRows().size(); j++) {
+				boolean remove = true;
+				for (int index = 0; index < relation.getRows().get(i)
+						.getTuple().length; index++) {
+					if (!relation.getRows().get(i).getTuple()[index].equals(relation
+							.getRows().get(j).getTuple()[index])) {
+						remove = false;
+					}
+				}
+				if (remove) {
+					relation.getRows().remove(j);
+					j--;
+				}
+			}
+		}
+		return relation;
+	}
   /**
    * Calculate costs for projection:
    * 

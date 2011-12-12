@@ -18,7 +18,7 @@ public class DetectJoins implements IOptimization {
 			if (canMerge(selection, cross)) {
 				OneChildNode parent = selection.getParent();
 				boolean secondChild = (parent == null) ? false : (parent
-						.getChild() == selection);
+						.getChild() != selection);
 				Join join = new Join();
 				join.setExpression(selection.getExpression());
 				join.setChild(cross.getChild());

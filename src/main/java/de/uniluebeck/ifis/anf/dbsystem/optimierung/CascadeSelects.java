@@ -41,11 +41,11 @@ public class CascadeSelects implements IOptimization {
 		}
 		
 		// Recursion
-		if (executionPlan.getClass() == OneChildNode.class){
+		if (executionPlan instanceof OneChildNode){
 			OneChildNode oneChild = (OneChildNode) executionPlan;
 			oneChild.setChild(optimize(oneChild.getChild()));
 		}
-		if (executionPlan.getClass() == TwoChildNode.class){
+		if (executionPlan instanceof TwoChildNode){
 			// First child is optimized since TwoChildNode extends OneChildNode
 			TwoChildNode twoChild = (TwoChildNode) executionPlan;
 			twoChild.setSecondChild(optimize(twoChild.getSecondChild()));
