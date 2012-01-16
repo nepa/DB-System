@@ -34,7 +34,7 @@ public class Delete extends TableOperation
     relation.getRows().removeAll(rows);
 
     table = relation.toTable();
-    table.write();
+//     table.write(); // TODO: Remove
 
     return table;
   }

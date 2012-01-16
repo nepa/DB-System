@@ -59,7 +59,7 @@ public class Insert extends TableOperation
 
     table.addRow(newRow);
 
-    table.write();
+//     table.write(); // TODO: Remove
 
     return table;
   }

@@ -66,7 +66,7 @@ public class ApplicationTest
     createTableOperation.setColumnNames(new String[] { "Firstname", "Lastname", "Age" });
 
     System.out.println(String.format("Creating table '%s'...", tableName));
-    Table table = createTableOperation.execute();
+    Table table = this.executePlan(createTableOperation);
     assertNotNull("Table object must not be null.", table);
     this.printTable(table);
     
@@ -77,7 +77,7 @@ public class ApplicationTest
     insertOperation.setValues(new String[] { "Max", "Mustermann", "42" });
     
     System.out.println("Inserting entry 'Max'...");
-    table = insertOperation.execute();
+    table = this.executePlan(insertOperation);
     assertTrue("Table must contain entry that was inserted.", table.toString().contains("Max"));
     this.printTable(table);
     
@@ -88,7 +88,7 @@ public class ApplicationTest
     insertOperation.setValues(new String[] { "Vanessa", "27" });
 
     System.out.println("Inserting entry 'Vanessa'...");
-    table = insertOperation.execute();
+    table = this.executePlan(insertOperation);
     assertTrue("Table must contain entry that was inserted.", table.toString().contains("Vanessa"));
     this.printTable(table);
     
@@ -107,7 +107,7 @@ public class ApplicationTest
     updateOperation.setValues(new String[] { "Meier" });
 
     System.out.println("Updating entry 'Vanessa'...");
-    table = updateOperation.execute();
+    table = this.executePlan(updateOperation);
     assertTrue("Table must contain altered entry.", table.toString().contains("Meier"));
     this.printTable(table);
     
@@ -124,7 +124,7 @@ public class ApplicationTest
     deleteOperation.setWhereClause(andExpression);
 
     System.out.println("Deleting entry 'Max'...");
-    table = deleteOperation.execute();
+    table = this.executePlan(deleteOperation);
     assertTrue("Table must not contain deleted entry anymore.", !table.toString().contains("Mustermann"));
     this.printTable(table);
     
@@ -133,7 +133,7 @@ public class ApplicationTest
     dropTableOperation.setName(tableName);
     
     System.out.println(String.format("Dropping table '%s'...", tableName));
-    table = dropTableOperation.execute();
+    table = this.executePlan(dropTableOperation);
     assertTrue("Drop flag must be set for table.", table.isDropped());
     this.printTable(table);
   }
@@ -408,6 +408,17 @@ public class ApplicationTest
     cross.setSecondChild(table2.toRelation());
 
     return projection;
+  }
+
+  /**
+   * Private helper method to execute plan and persist results.
+   */
+  private Table executePlan(final TableOperation operation) throws Exception
+  {
+    Table result = operation.execute();
+    result.write();
+    
+    return result;
   }
 
   /**

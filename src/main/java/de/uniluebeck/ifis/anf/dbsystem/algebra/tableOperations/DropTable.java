@@ -14,7 +14,7 @@ public class DropTable extends TableOperation
     Table table = Table.loadTable(this.name);
     table.setDrop(true);
     
-    table.write();
+//     table.write(); // TODO: Remove
     
     return table;
   }  

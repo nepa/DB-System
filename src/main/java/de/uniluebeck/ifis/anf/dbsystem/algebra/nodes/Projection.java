@@ -24,7 +24,7 @@ public class Projection extends OneChildNode
   @Override
   public Relation evaluate() throws Exception
   {
-	adjustColumnNames();
+    adjustColumnNames();
     Relation relation = this.getChild().evaluate();
     Relation result = new Relation();
     result.setAlias(relation.getAlias());

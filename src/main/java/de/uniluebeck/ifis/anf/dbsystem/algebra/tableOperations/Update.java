@@ -61,7 +61,7 @@ public class Update extends Delete
     }
 
     table = relation.toTable();
-    table.write();
+//     table.write(); // TODO: Remove
 
     return table;
   }

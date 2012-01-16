@@ -24,7 +24,7 @@ public class CreateTable extends TableOperation
   public Table execute() throws Exception
   {
     Table table = new Table(this.name, this.name, this.columnNames);
-    table.write();
+//     table.write(); // TODO: Remove
 
     return table;
   }

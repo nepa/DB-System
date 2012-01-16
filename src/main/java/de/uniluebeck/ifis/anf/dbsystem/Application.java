@@ -12,6 +12,7 @@ import de.uniluebeck.ifis.anf.dbsystem.parser.gene.ParseException;
 import de.uniluebeck.ifis.anf.dbsystem.parser.gene.SimpleSQLParser;
 import de.uniluebeck.ifis.anf.dbsystem.parser.syntaxtree.CompilationUnit;
 import de.uniluebeck.ifis.anf.dbsystem.algebra.SimpleSQLToRelAlgVisitor;
+import de.uniluebeck.ifis.anf.dbsystem.algebra.tableOperations.TableOperation;
 
 /**
  * DB-System main application.
@@ -158,7 +159,15 @@ public class Application
    */
   private static Relation executePlan(final ITreeNode executionPlan) throws Exception
   {
-    return executionPlan.evaluate();
+    Relation result = executionPlan.evaluate();
+
+    // Persist result of execution plan
+    if (executionPlan instanceof TableOperation)
+    {
+      result.toTable().write();
+    }
+
+    return result;
   }
 
   /**

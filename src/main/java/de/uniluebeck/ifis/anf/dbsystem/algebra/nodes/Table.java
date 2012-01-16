@@ -27,6 +27,8 @@ public class Table implements Serializable
   protected String alias;
 
   protected boolean drop;
+  
+  protected long lastWritten;
 
   protected String[] columnNames;
 
@@ -39,6 +41,17 @@ public class Table implements Serializable
     this.setDrop(false);
     this.setColumnNames(columnNames);
     this.setRows(new ArrayList<String[]>());
+    this.setLastWritten(System.currentTimeMillis());
+  }
+
+  public long getLastWritten()
+  {
+    return lastWritten;
+  }
+
+  public void setLastWritten(long lastWritten)
+  {
+    this.lastWritten = lastWritten;
   }
 
   public String getAlias()
@@ -160,6 +173,9 @@ public class Table implements Serializable
         fileOutputStream = new FileOutputStream(Table.DATABASE_PATH
                 + System.getProperty("file.separator") + this.getName() + Table.DATABASE_TABLE_FILE_EXTENSION);
         objectOutputStream = new ObjectOutputStream(fileOutputStream);
+        
+        // Set write timestamp
+        this.setLastWritten(System.currentTimeMillis());
 
         // Serialize object to stream
         objectOutputStream.writeObject(this);
