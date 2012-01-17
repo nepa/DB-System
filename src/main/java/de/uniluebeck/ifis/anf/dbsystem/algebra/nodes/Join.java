@@ -19,8 +19,6 @@ public class Join extends CrossProduct
 
 	@Override
 	public Relation evaluate() throws Exception {
-		// TODO: Is this complete yet?
-
 		Relation crossRelation = super.evaluate();
 		Relation result = new Relation();
 		result.setColumnNames(crossRelation.getColumnNames());
@@ -52,7 +50,6 @@ public class Join extends CrossProduct
     Relation rel1 = getChild().evaluate();
     Relation rel2 = getSecondChild().evaluate();
 
-    // TODO: How do we get Rows_s(T1/T2)?
     return oldCost + this.evaluate().getRows().size() +
             (rel1.getColumnNames().length + rel2.getColumnNames().length);
   }
