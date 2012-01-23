@@ -1,6 +1,5 @@
 package de.uniluebeck.ifis.anf.dbsystem;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -12,6 +11,7 @@ import de.uniluebeck.ifis.anf.dbsystem.optimierung.CascadeSelects;
 import de.uniluebeck.ifis.anf.dbsystem.optimierung.DetectJoins;
 import de.uniluebeck.ifis.anf.dbsystem.optimierung.MoveProjection;
 import de.uniluebeck.ifis.anf.dbsystem.optimierung.MoveSelection;
+import de.uniluebeck.ifis.anf.dbsystem.transaction.ClientThread;
 
 /**
  * Unit test for DB-System application.
@@ -24,7 +24,7 @@ public class ApplicationTest
   @Test(timeout = 1000)
   public void testTableOutput()
   {
-    this.printCaption("Testing table output..");
+    this.printCaption("Testing table output...");
 
     Table table = this.createTestTable();
 
@@ -291,6 +291,23 @@ public class ApplicationTest
   }
   
   /**
+   * Test transaction scheduler.
+   */
+  @Test(timeout = 10000)
+  public void testTransactionScheduler() throws Exception
+  {    
+    Application.createKundenDB();
+    
+    ClientThread thread1 = new ClientThread("sql1.txt");
+    ClientThread thread2 = new ClientThread("sql2.txt");
+    ClientThread thread3 = new ClientThread("sql3.txt");
+    
+    thread1.start();
+    thread2.start();
+    thread3.start();
+  }
+  
+  /**
    * Private helper method to test serialization of Table objects.
    */
   private void testTableWrite() throws Exception
@@ -373,18 +390,21 @@ public class ApplicationTest
     createTableOperation.setName("Persons");
     createTableOperation.setColumnNames(new String[] { "Firstname", "Lastname", "Age" });
     Table table1 = createTableOperation.execute();
+    table1.write();
 
     Insert insertOperation = new Insert();
     insertOperation.setName("Persons");
     insertOperation.setColumnNames(new String[] { "Firstname", "Lastname", "Age" });
     insertOperation.setValues(new String[] { "Max", "Mustermann", "42" });
     table1 = insertOperation.execute();
+    table1.write();
 
     insertOperation = new Insert();
     insertOperation.setName("Persons");
     insertOperation.setColumnNames(new String[] { "Firstname", "Lastname", "Age" });
     insertOperation.setValues(new String[] { "Vanessa", "Meier", "21" });
     table1 = insertOperation.execute();
+    table1.write();
     
     cross.setChild(table1.toRelation());
 
@@ -392,18 +412,21 @@ public class ApplicationTest
     createTableOperation.setName("Hobbies");
     createTableOperation.setColumnNames(new String[] { "Lastname", "Hobby" });
     Table table2 = createTableOperation.execute();
+    table2.write();
 
     insertOperation = new Insert();
     insertOperation.setName("Hobbies");
     insertOperation.setColumnNames(new String[] { "Lastname", "Hobby" });
     insertOperation.setValues(new String[] { "Meier", "Fishing" });
     table2 = insertOperation.execute();
+    table2.write();
 
     insertOperation = new Insert();
     insertOperation.setName("Hobbies");
     insertOperation.setColumnNames(new String[] { "Lastname", "Hobby" });
     insertOperation.setValues(new String[] { "Mustermann", "Golf" });
     table2 = insertOperation.execute();
+    table2.write();
     
     cross.setSecondChild(table2.toRelation());
 

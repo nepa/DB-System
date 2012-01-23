@@ -20,8 +20,8 @@ import de.uniluebeck.ifis.anf.dbsystem.algebra.tableOperations.TableOperation;
 public class Application
 {
   /** Path to SimpleSQL queries (with trailing slash!) */  
-  public static final String QUERY_PATH = System.getProperty("user.home") + "/anfrage/repo/src/test/resources/";
-//  public static final String QUERY_PATH = System.getProperty("user.home") + "/NetBeansProjects/DB-System/src/test/resources/";
+//  public static final String QUERY_PATH = System.getProperty("user.home") + "/anfrage/repo/src/test/resources/";
+  public static final String QUERY_PATH = System.getProperty("user.home") + "/NetBeansProjects/DB-System/src/test/resources/";
 
   /**
    * Application program to run DB-System application.
@@ -65,7 +65,7 @@ public class Application
     System.out.println("=================================================================\n");
     System.out.println("Query: " + query);
     System.out.println("Costs: " + executionPlan.getCosts());
-    Application.printTable(result.toTable());
+    // TODO Application.printTable(result.toTable());
 
     return result.toTable();
   }

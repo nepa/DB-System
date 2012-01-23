@@ -55,6 +55,7 @@ public class Scheduler implements IScheduler
   {
     long newID = currentTransactionID++;
     workspaces.put(newID, new ArrayList<Table>());
+    writtenTables.put(newID, new ArrayList<String>());
     startingTime.put(newID, System.currentTimeMillis());
     return newID;
   }
@@ -64,8 +65,11 @@ public class Scheduler implements IScheduler
   {
     //Executions on Transactions that haven't started yet, are not allowed
     if (!workspaces.containsKey(tid)){
+      System.out.println("Aborting transaction with ID " + tid);
       return null;
     }
+    
+    System.out.println("Executing transaction with ID " + tid);
     
     TableAndCost result = null;
     try
@@ -97,11 +101,11 @@ public class Scheduler implements IScheduler
       
       result = new TableAndCost();
       result.setTable(planResult.toTable());
-      result.setCosts(planResult.getCosts());
+      result.setCosts(plan.getCosts());
     }
     catch (Exception ex)
     {
-      Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex);
+      ex.printStackTrace();
     }
     return result;
   }

@@ -50,7 +50,12 @@ public class Insert extends TableOperation
     {
       for (int j = 0; j < this.columnNames.length; ++j)
       {
-        if (table.getColumnNames()[i].equals(this.columnNames[j]))
+        String columnName = table.getColumnNames()[i];
+        if (columnName.contains(".")){
+          columnName = columnName.split("\\.")[1];
+        }
+        
+        if (columnName.equals(this.columnNames[j]))
         {
           newRow[i] = this.values[j];
         }
@@ -58,7 +63,7 @@ public class Insert extends TableOperation
     }
 
     table.addRow(newRow);
-
+    
 //     table.write(); // TODO: Remove
 
     return table;

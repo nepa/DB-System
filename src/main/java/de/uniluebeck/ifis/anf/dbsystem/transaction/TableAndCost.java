@@ -32,4 +32,9 @@ public class TableAndCost
   {
     this.table = table;
   }
+  
+  public String toString()
+  {
+    return "Costs for Table " + table.getName() + ": " + costs + "\n\n" + table.toString();
+  }
 }
